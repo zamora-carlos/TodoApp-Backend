@@ -38,8 +38,7 @@ public class ToDoService {
     }
 
     // Implement the logic to mark a ToDo as done
-    //
-    // public void markAsDone(Long id) { }
+    public void markAsDone(Long id) { }
 
     public void markAsUndone(Long id) {
         Optional<ToDo> toDo = toDoRepository.findById(id);

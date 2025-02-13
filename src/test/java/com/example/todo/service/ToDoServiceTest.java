@@ -70,6 +70,23 @@ public class ToDoServiceTest {
     }
 
     @Test
+    void testMarkAsDone() {
+        // Arrange
+        ToDo newTodo = new ToDo("Todo", Priority.HIGH);
+        newTodo.setId(1L);
+
+        when(toDoRepository.findById(1L)).thenReturn(Optional.of(newTodo));
+
+        // Act
+        toDoService.markAsDone(1L);
+
+        // Assert
+        assertTrue(newTodo.isDone());
+        assertNotNull(newTodo.getDoneDate());
+        verify(toDoRepository, times(1)).findById(1L);
+    }
+
+    @Test
     void testMarkAsUndone() {
         // Arrange
         ToDo completedTodo = new ToDo("Todo", Priority.LOW);
