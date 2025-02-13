@@ -38,7 +38,15 @@ public class ToDoService {
     }
 
     // Implement the logic to mark a ToDo as done
-    public void markAsDone(Long id) { }
+    public void markAsDone(Long id) {
+        Optional<ToDo> toDo = toDoRepository.findById(id);
+        if (toDo.isPresent() && !toDo.get().isDone()) {
+            ToDo todo = toDo.get();
+            todo.setDone(true);
+            todo.setDoneDate(LocalDateTime.now());
+            toDoRepository.save(todo);
+        }
+    }
 
     public void markAsUndone(Long id) {
         Optional<ToDo> toDo = toDoRepository.findById(id);
