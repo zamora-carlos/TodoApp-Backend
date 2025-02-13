@@ -1,5 +1,6 @@
 package com.example.todo.service;
 
+import com.example.todo.dto.ToDoDto;
 import com.example.todo.dto.ToDoPageResponseDto;
 import com.example.todo.model.ToDo;
 import com.example.todo.model.Priority;
@@ -19,7 +20,28 @@ public class ToDoService {
     private ToDoRepository toDoRepository;
 
     public ToDoPageResponseDto getTodos(String name, Priority priority, Boolean done, int page, int size) {
-        return null;
+        List<ToDo> todos = toDoRepository.findAll();
+
+        int start = page * size;
+        int end = Math.min(todos.size(), start + size);
+
+        List<ToDoDto> todoDtos = todos.subList(start, end)
+            .stream()
+            .map(todo -> ToDoDto.builder()
+                .id(todo.getId())
+                .text(todo.getText())
+                .priority(todo.getPriority())
+                .dueDate(todo.getDueDate())
+                .isDone(todo.isDone())
+                .build()
+            ).toList();
+
+        return ToDoPageResponseDto.builder()
+            .currentPage(page)
+            .pageSize(size)
+            .totalItems(todos.size())
+            .data(todoDtos)
+            .build();
     }
 
     // Implement the logic to create a new ToDo

@@ -28,8 +28,8 @@ public class ToDoServiceTest {
     private ToDoService toDoService;
 
     @Test
-    void testGetTodos() {
-        // Arrange
+    void testGetTodsos() {
+        // Arranges
         List<ToDo> todos = Arrays.asList(
             new ToDo("Todo 1", Priority.LOW),
             new ToDo("Todo 2", Priority.HIGH),
