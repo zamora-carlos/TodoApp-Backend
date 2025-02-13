@@ -76,6 +76,25 @@ public class ToDoRepositoryTest {
     }
 
     @Test
+    void testUpdateToDo() {
+        // Arrange
+        ToDo todo = new ToDo("New todo", Priority.LOW);
+        toDoRepository.save(todo);
+
+        // Act
+        todo.setPriority(Priority.HIGH);
+        toDoRepository.save(todo);
+
+        Optional<ToDo> optionalTodo = toDoRepository.findById(todo.getId());
+        List<ToDo> todos = toDoRepository.findAll();
+
+        // Assert
+        assertEquals(1, todos.size());
+        assertTrue(optionalTodo.isPresent());
+        assertEquals(Priority.HIGH, optionalTodo.get().getPriority());
+    }
+
+    @Test
     void testDeleteById() {
         // Arrange
         ToDo todo = new ToDo("Todo to be deleted", Priority.LOW);
