@@ -35,10 +35,6 @@ public class ToDoRepositoryTest {
         // Act
         List<ToDo> todos = toDoRepository.findAll();
 
-        for (ToDo todo : todos) {
-            System.out.println(todo.getId() + " " + todo.getText());
-        }
-
         // Assert
         assertEquals(2, todos.size());
     }
@@ -77,5 +73,34 @@ public class ToDoRepositoryTest {
         // Assert
         assertNotNull(savedTodo.getId());
         assertEquals("Example todo", savedTodo.getText());
+    }
+
+    @Test
+    void testDeleteById() {
+        // Arrange
+        ToDo todo = new ToDo("Todo to be deleted", Priority.LOW);
+        toDoRepository.save(todo);
+
+        // Act
+        toDoRepository.deleteById(todo.getId());
+        Optional<ToDo> optionalTodo = toDoRepository.findById(todo.getId());
+
+        // Assert
+        assertFalse(optionalTodo.isPresent());
+    }
+
+    @Test
+    void testDeleteById_ToDoNotFound() {
+        // Arrange
+        ToDo todo = new ToDo("Another todo", Priority.LOW);
+        toDoRepository.save(todo);
+
+        // Act
+        toDoRepository.deleteById(todo.getId() + 1);
+        Optional<ToDo> optionalTodo = toDoRepository.findById(todo.getId());
+
+        // Assert
+        assertTrue(optionalTodo.isPresent());
+        assertEquals("Another todo", optionalTodo.get().getText());
     }
 }
