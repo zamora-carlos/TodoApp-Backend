@@ -68,4 +68,23 @@ public class ToDoServiceTest {
         assertNull(updatedToDo);
         verify(toDoRepository, times(1)).findById(1L);
     }
+
+    @Test
+    void testMarkAsUndone() {
+        // Arrange
+        ToDo completedTodo = new ToDo("Todo", Priority.LOW);
+        completedTodo.setId(1L);
+        completedTodo.setDone(true);
+        completedTodo.setDoneDate(LocalDateTime.of(2025, 2, 10, 0, 0));
+
+        when(toDoRepository.findById(1L)).thenReturn(Optional.of(completedTodo));
+
+        // Act
+        toDoService.markAsUndone(1L);
+
+        // Assert
+        assertFalse(completedTodo.isDone());
+        assertNull(completedTodo.getDoneDate());
+        verify(toDoRepository, times(1)).findById(1L);
+    }
 }
