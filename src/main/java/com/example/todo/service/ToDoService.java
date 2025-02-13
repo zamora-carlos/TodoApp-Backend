@@ -21,8 +21,9 @@ public class ToDoService {
     }
 
     // Implement the logic to create a new ToDo
-    //
-    // public ToDo createToDo(ToDo todo) { }
+     public ToDo createToDo(ToDo todo) {
+        return toDoRepository.save(todo);
+     }
 
     public ToDo updateToDo(Long id, String name, Priority priority, LocalDateTime dueDate) {
         Optional<ToDo> existingToDo = toDoRepository.findById(id);
