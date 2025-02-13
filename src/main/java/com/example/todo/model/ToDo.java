@@ -30,6 +30,11 @@ public class ToDo {
         this.isDone = false;
     }
 
+    public ToDo(String text, Priority priority) {
+        this.priority = priority;
+        this.text = text;
+    }
+
     // Getters and Setters for all fields
     public Long getId() {
         return id; // Getter for the id field
