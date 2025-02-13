@@ -1,5 +1,6 @@
 package com.example.todo.service;
 
+import com.example.todo.dto.ToDoPageResponseDto;
 import com.example.todo.model.Priority;
 import com.example.todo.model.ToDo;
 import com.example.todo.repository.ToDoRepository;
@@ -25,6 +26,29 @@ public class ToDoServiceTest {
 
     @InjectMocks
     private ToDoService toDoService;
+
+    @Test
+    void testGetTodos() {
+        // Arrange
+        List<ToDo> todos = Arrays.asList(
+            new ToDo("Todo 1", Priority.LOW),
+            new ToDo("Todo 2", Priority.HIGH),
+            new ToDo("Todo 3", Priority.MEDIUM),
+            new ToDo("Todo 4", Priority.LOW)
+        );
+
+        when(toDoRepository.findAll()).thenReturn(todos);
+
+        // Act
+        ToDoPageResponseDto pageResponse = toDoService.getTodos(null, null, null, 1, 2);
+
+        // Assert
+        assertEquals(1, pageResponse.getCurrentPage());
+        assertEquals(2, pageResponse.getPageSize());
+        assertEquals(2, pageResponse.getData().size());
+        assertEquals(4, pageResponse.getTotalItems());
+        verify(toDoRepository, times(1)).findAll();
+    }
 
     @Test
     void testCreateToDo() {

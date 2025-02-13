@@ -1,5 +1,6 @@
 package com.example.todo.service;
 
+import com.example.todo.dto.ToDoPageResponseDto;
 import com.example.todo.model.ToDo;
 import com.example.todo.model.Priority;
 import com.example.todo.repository.ToDoRepository;
@@ -17,8 +18,8 @@ public class ToDoService {
     @Autowired
     private ToDoRepository toDoRepository;
 
-    public List<ToDo> getTodos(String name, Priority priority, Boolean done, int page, int size) {
-        return toDoRepository.findAll();
+    public ToDoPageResponseDto getTodos(String name, Priority priority, Boolean done, int page, int size) {
+        return null;
     }
 
     // Implement the logic to create a new ToDo

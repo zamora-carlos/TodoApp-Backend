@@ -1,5 +1,6 @@
 package com.example.todo.controller;
 
+import com.example.todo.dto.ToDoPageResponseDto;
 import com.example.todo.model.ToDo;
 import com.example.todo.model.Priority;
 import com.example.todo.service.ToDoService;
@@ -18,11 +19,11 @@ public class ToDoController {
     private ToDoService toDoService;
 
     @GetMapping
-    public List<ToDo> getTodos(
+    public ToDoPageResponseDto getTodos(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "priority", required = false) Priority priority,
             @RequestParam(value = "done", required = false) Boolean done,
-            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
         return toDoService.getTodos(name, priority, done, page, size);
     }

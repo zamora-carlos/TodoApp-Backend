@@ -1,14 +1,11 @@
 package com.example.todo.dto;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.List;
 
 @Data
-@ToString
 @Builder
 public class ToDoPageResponseDto implements Serializable {
     private int currentPage;
