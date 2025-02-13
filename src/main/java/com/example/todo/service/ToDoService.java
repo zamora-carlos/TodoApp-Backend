@@ -58,8 +58,8 @@ public class ToDoService {
         }
     }
 
-    public double getAverageCompletionTime() {
+    public long getAverageCompletionTime() {
         // Logic to calculate average time between creation and done, needs more work to do
-        return 0.0;
+        return 0L;
     }
 }
