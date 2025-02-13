@@ -6,6 +6,7 @@ import com.example.todo.repository.ToDoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +61,10 @@ public class ToDoService {
 
     public long getAverageCompletionTime() {
         // Logic to calculate average time between creation and done, needs more work to do
-        return 0L;
+        return toDoRepository.findAll()
+            .stream()
+            .filter(ToDo::isDone)
+            .map(todo -> Duration.between(todo.getCreatedAt(), todo.getDoneDate()).getSeconds())
+            .reduce(Long::sum).orElse(0L);
     }
 }
