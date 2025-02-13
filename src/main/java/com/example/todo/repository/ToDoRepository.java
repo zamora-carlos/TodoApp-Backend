@@ -29,6 +29,10 @@ public class ToDoRepository {
         return todo;
     }
 
+    public void deleteAll() {
+        todos.clear();
+    }
+
     public void deleteById(Long id) {
         todos.removeIf(todo -> todo.getId().equals(id));
     }
