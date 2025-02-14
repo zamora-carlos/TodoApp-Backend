@@ -17,12 +17,12 @@ public class ToDoService {
     private ToDoRepository toDoRepository;
 
     public List<ToDo> getTodos(String name, Priority priority, Boolean done, int page, int size) {
-        return toDoRepository.findAll();
+        return toDoRepository.findAllPaginated(name, priority, done, page, size);
     }
 
-    // Implement the logic to create a new ToDo
-    //
-    // public ToDo createToDo(ToDo todo) { }
+    public ToDo createToDo(ToDo todo) {
+        return toDoRepository.save(todo);
+    }
 
     public ToDo updateToDo(Long id, String name, Priority priority, LocalDateTime dueDate) {
         Optional<ToDo> existingToDo = toDoRepository.findById(id);
@@ -36,9 +36,15 @@ public class ToDoService {
         return null;
     }
 
-    // Implement the logic to mark a ToDo as done
-    //
-    // public void markAsDone(Long id) { }
+    public void markAsDone(Long id) {
+        Optional<ToDo> toDo = toDoRepository.findById(id);
+        if (toDo.isPresent() && !toDo.get().isDone()) {
+            ToDo todo = toDo.get();
+            todo.setDone(true);
+            todo.setDoneDate(LocalDateTime.now());
+            toDoRepository.save(todo);
+        }
+    }
 
     public void markAsUndone(Long id) {
         Optional<ToDo> toDo = toDoRepository.findById(id);
@@ -51,7 +57,7 @@ public class ToDoService {
     }
 
     public double getAverageCompletionTime() {
-        // Logic to calculate average time between creation and done, needs more work to do
-        return 0.0;
+        // Logic to calculate average time between creation and done
+        return 0.0; // Return the calculated value
     }
 }

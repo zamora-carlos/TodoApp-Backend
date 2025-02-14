@@ -2,20 +2,29 @@ package com.example.todo.repository;
 
 import com.example.todo.model.ToDo;
 import org.springframework.stereotype.Repository;
+import com.example.todo.model.Priority;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class ToDoRepository {
 
     private final List<ToDo> todos = new ArrayList<>();
-    private final AtomicLong counter = new AtomicLong(0);
 
     public List<ToDo> findAll() {
         return todos;
+    }
+
+    public List<ToDo> findAllPaginated(String name, Priority priority, Boolean done, int page, int size) {
+        return todos.stream()
+                .filter(todo -> (name == null || todo.getText().contains(name)) &&
+                        (priority == null || todo.getPriority() == priority) &&
+                        (done == null || todo.isDone() == done))
+                .skip((long) page * size)
+                .limit(size)
+                .toList();
     }
 
     public Optional<ToDo> findById(Long id) {
@@ -23,27 +32,15 @@ public class ToDoRepository {
     }
 
     public ToDo save(ToDo todo) {
-        if (todo.getId() != null) {
-            for (int i = 0; i < todos.size(); i++) {
-                if (todos.get(i).getId().equals(todo.getId())) {
-                    todos.set(i, todo);
-                    return todo;
-                }
-            }
-        }
-
-        long id = counter.getAndIncrement();
-        todo.setId(id);
-
         todos.add(todo);
         return todo;
     }
 
-    public void deleteAll() {
-        todos.clear();
-    }
-
     public void deleteById(Long id) {
         todos.removeIf(todo -> todo.getId().equals(id));
+    }
+
+    public void deleteAll() {
+        todos.clear();
     }
 }
