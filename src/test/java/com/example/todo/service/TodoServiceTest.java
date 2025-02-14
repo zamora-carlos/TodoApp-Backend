@@ -1,6 +1,7 @@
 package com.example.todo.service;
 
 import com.example.todo.dto.PaginatedResponse;
+import com.example.todo.dto.TodoFilter;
 import com.example.todo.dto.TodoResponse;
 import com.example.todo.model.Priority;
 import com.example.todo.model.Todo;
@@ -31,6 +32,7 @@ public class TodoServiceTest {
     @Test
     void testGetTodos() {
         // Arrange
+        TodoFilter filter = new TodoFilter(null, null, null);
         List<Todo> todos = Arrays.asList(
                 new Todo("Todo 1", Priority.LOW),
                 new Todo("Todo 2", Priority.HIGH),
@@ -40,13 +42,47 @@ public class TodoServiceTest {
         when(todoRepository.findAll()).thenReturn(todos);
 
         // Act
-        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(null, null, null, 1, 2);
+        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(filter, 1, 2);
 
         // Assert
         assertEquals(1, pageResponse.getCurrentPage());
         assertEquals(2, pageResponse.getPageSize());
         assertEquals(2, pageResponse.getContent().size());
         assertEquals(4, pageResponse.getTotalItems());
+
+        assertEquals("Todo 1", pageResponse.getContent().getFirst().getText());
+        assertEquals("Todo 2", pageResponse.getContent().getLast().getText());
+
+        verify(todoRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testGetTodos_FilterByPriority() {
+        // Arrange
+        TodoFilter filter = new TodoFilter(null, Priority.LOW, null);
+        List<Todo> todos = Arrays.asList(
+                new Todo("Todo 1", Priority.LOW),
+                new Todo("Todo 2", Priority.HIGH),
+                new Todo("Todo 3", Priority.MEDIUM),
+                new Todo("Todo 4", Priority.LOW));
+
+        when(todoRepository.findAll()).thenReturn(todos);
+
+        // Act
+        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(filter, 1, 2);
+
+        // Assert
+        assertEquals(1, pageResponse.getCurrentPage());
+        assertEquals(2, pageResponse.getPageSize());
+        assertEquals(1, pageResponse.getTotalPages());
+        assertEquals(2, pageResponse.getContent().size());
+        assertEquals(2, pageResponse.getTotalItems());
+
+        assertEquals("Todo 1", pageResponse.getContent().getFirst().getText());
+        assertEquals("Todo 4", pageResponse.getContent().getLast().getText());
+
+        assertEquals(Priority.LOW, pageResponse.getFilter().getPriority());
+
         verify(todoRepository, times(1)).findAll();
     }
 
