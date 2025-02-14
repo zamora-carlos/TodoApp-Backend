@@ -1,6 +1,7 @@
 package com.example.todo.controller;
 
 import com.example.todo.dto.PaginatedResponse;
+import com.example.todo.dto.TodoFilter;
 import com.example.todo.dto.TodoResponse;
 import com.example.todo.model.Priority;
 import com.example.todo.model.Todo;
@@ -29,7 +30,8 @@ public class TodoController {
             @RequestParam(value = "done", required = false) Boolean done,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
-        PaginatedResponse<TodoResponse> response = todoService.getTodos(name, priority, done, page, size);
+        TodoFilter filter = new TodoFilter(name, priority, done);
+        PaginatedResponse<TodoResponse> response = todoService.getTodos(filter, page, size);
         return ResponseEntity.ok(response);
     }
 

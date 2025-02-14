@@ -1,6 +1,7 @@
 package com.example.todo.service;
 
 import com.example.todo.dto.PaginatedResponse;
+import com.example.todo.dto.TodoFilter;
 import com.example.todo.dto.TodoResponse;
 import com.example.todo.model.Priority;
 import com.example.todo.model.Todo;
@@ -19,14 +20,14 @@ public class TodoService {
     @Autowired
     private TodoRepository todoRepository;
 
-    public PaginatedResponse<TodoResponse> getTodos(String name, Priority priority, Boolean done, int page, int size) {
+    public PaginatedResponse<TodoResponse> getTodos(TodoFilter filter, int page, int size) {
         List<Todo> todos = todoRepository.findAll();
 
         List<TodoResponse> content = todos.stream()
                 .filter(todo ->
-                        (name == null || todo.getText().toLowerCase().contains(name)) &&
-                        (priority == null || todo.getPriority() == priority) &&
-                        (done == null || todo.isDone() == done))
+                        (filter.getName() == null || todo.getText().toLowerCase().contains(filter.getName())) &&
+                        (filter.getPriority() == null || todo.getPriority() == filter.getPriority()) &&
+                        (filter.getDone() == null || todo.isDone() == filter.getDone()))
                 .skip((long) (page - 1) * size)
                 .limit(size)
                 .map(todo -> TodoResponse.builder()
@@ -47,6 +48,7 @@ public class TodoService {
                 .totalPages(totalPages)
                 .pageSize(size)
                 .totalItems(totalItems)
+                .filter(filter)
                 .build();
     }
 
