@@ -1,9 +1,11 @@
 package com.example.todo.controller;
 
+import com.example.todo.dto.CreateTodoRequest;
 import com.example.todo.dto.PaginatedResponse;
 import com.example.todo.dto.TodoFilter;
 import com.example.todo.dto.TodoResponse;
 import com.example.todo.model.Priority;
+import com.example.todo.model.Todo;
 import com.example.todo.service.TodoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -64,5 +66,28 @@ public class TodoControllerTest {
                 .andExpect(jsonPath("$.content[0].text").value("Task 1"));
 
         verify(todoService, times(1)).getTodos(filter, 1, 5);
+    }
+
+    @Test
+    void testCreateTodo() throws Exception {
+        // Arrange
+        Todo todo = new Todo("Title", Priority.MEDIUM);
+        todo.setId(1L);
+
+        CreateTodoRequest todoRequest = CreateTodoRequest.builder()
+                .text("Title")
+                .priority(Priority.MEDIUM)
+                .dueDate(null)
+                .build();
+
+        when(todoService.createTodo(any(CreateTodoRequest.class))).thenReturn(todo);
+
+        // Act & Assert
+        mockMvc.perform(post("/todos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(todoRequest)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.text").value("Title"))
+                .andExpect(jsonPath("$.id").value(1));
     }
 }
