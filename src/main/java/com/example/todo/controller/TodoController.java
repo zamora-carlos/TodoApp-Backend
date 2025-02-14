@@ -1,30 +1,23 @@
 package com.example.todo.controller;
 
-import com.example.todo.dto.PaginatedResponse;
-import com.example.todo.dto.TodoFilter;
-import com.example.todo.dto.TodoResponse;
+import com.example.todo.dto.*;
 import com.example.todo.model.Priority;
-import com.example.todo.model.Todo;
-import com.example.todo.repository.TodoRepository;
 import com.example.todo.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-
 @RestController
 @RequestMapping("/todos")
+@CrossOrigin("*")
 public class TodoController {
 
     @Autowired
     private TodoService todoService;
 
-    @Autowired
-    private TodoRepository todoRepository;
-
     @GetMapping
-    public ResponseEntity<PaginatedResponse<TodoResponse>> getTodos(
+    public ResponseEntity<PaginatedResponse<TodoResponse>> getAllTodos(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "priority", required = false) Priority priority,
             @RequestParam(value = "done", required = false) Boolean done,
@@ -36,17 +29,22 @@ public class TodoController {
     }
 
     @PostMapping
-    public Todo createTodo(@RequestBody Todo todo) {
-        return todoService.createTodo(todo);
+    public ResponseEntity<TodoResponse> createTodo(@RequestBody CreateTodoRequest todo) {
+        TodoResponse createdTodo = todoService.createTodo(todo);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTodo);
     }
 
     @PutMapping("/{id}")
-    public Todo updateTodo(
+    public TodoResponse updateTodo(
             @PathVariable Long id,
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "priority", required = false) Priority priority,
-            @RequestParam(value = "dueDate", required = false) LocalDateTime dueDate) {
-        return todoService.updateTodo(id, name, priority, dueDate);
+            @RequestBody UpdateTodoRequest updateTodoRequest) {
+        return todoService.updateTodo(id, updateTodoRequest);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTodo(@PathVariable Long id) {
+        todoService.deleteTodo(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/done")

@@ -1,8 +1,6 @@
 package com.example.todo.service;
 
-import com.example.todo.dto.PaginatedResponse;
-import com.example.todo.dto.TodoFilter;
-import com.example.todo.dto.TodoResponse;
+import com.example.todo.dto.*;
 import com.example.todo.model.Priority;
 import com.example.todo.model.Todo;
 import com.example.todo.repository.TodoRepository;
@@ -202,10 +200,11 @@ public class TodoServiceTest {
     void testCreateTodo() {
         // Arrange
         Todo todo = new Todo("Created todo", Priority.LOW);
+        CreateTodoRequest todoRequest = new CreateTodoRequest("Created todo", Priority.LOW, null);
         when(todoRepository.save(any(Todo.class))).thenReturn(todo);
 
         // Act
-        Todo createdTodo = todoService.createTodo(todo);
+        TodoResponse createdTodo = todoService.createTodo(todoRequest);
 
         // Assert
         assertNotNull(createdTodo);
@@ -222,7 +221,7 @@ public class TodoServiceTest {
         when(todoRepository.save(any(Todo.class))).thenReturn(todo);
 
         // Act
-        Todo updatedTodo = todoService.updateTodo(1L, "Updated text", Priority.LOW, LocalDateTime.now());
+        TodoResponse updatedTodo = todoService.updateTodo(1L, new UpdateTodoRequest("Updated text", Priority.LOW, LocalDateTime.now()));
 
         // Assert
         assertEquals("Updated text", updatedTodo.getText());
@@ -236,7 +235,7 @@ public class TodoServiceTest {
         when(todoRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act
-        Todo updatedTodo = todoService.updateTodo(1L, "Updated text", Priority.LOW, LocalDateTime.now());
+        TodoResponse updatedTodo = todoService.updateTodo(1L, new UpdateTodoRequest("Updated text", Priority.LOW, LocalDateTime.now()));
 
         // Assert
         assertNull(updatedTodo);
