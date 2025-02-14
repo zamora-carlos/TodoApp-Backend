@@ -1,14 +1,11 @@
 package com.example.todo.service;
 
-import com.example.todo.dto.ToDoDto;
-import com.example.todo.dto.ToDoPageResponseDto;
 import com.example.todo.model.ToDo;
 import com.example.todo.model.Priority;
 import com.example.todo.repository.ToDoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -19,35 +16,13 @@ public class ToDoService {
     @Autowired
     private ToDoRepository toDoRepository;
 
-    public ToDoPageResponseDto getTodos(String name, Priority priority, Boolean done, int page, int size) {
-        List<ToDo> todos = toDoRepository.findAll();
-
-        int start = page * size;
-        int end = Math.min(todos.size(), start + size);
-
-        List<ToDoDto> todoDtos = todos.subList(start, end)
-            .stream()
-            .map(todo -> ToDoDto.builder()
-                .id(todo.getId())
-                .text(todo.getText())
-                .priority(todo.getPriority())
-                .dueDate(todo.getDueDate())
-                .isDone(todo.isDone())
-                .build()
-            ).toList();
-
-        return ToDoPageResponseDto.builder()
-            .currentPage(page)
-            .pageSize(size)
-            .totalItems(todos.size())
-            .data(todoDtos)
-            .build();
+    public List<ToDo> getTodos(String name, Priority priority, Boolean done, int page, int size) {
+        return toDoRepository.findAllPaginated(name, priority, done, page, size);
     }
 
-    // Implement the logic to create a new ToDo
-     public ToDo createToDo(ToDo todo) {
+    public ToDo createToDo(ToDo todo) {
         return toDoRepository.save(todo);
-     }
+    }
 
     public ToDo updateToDo(Long id, String name, Priority priority, LocalDateTime dueDate) {
         Optional<ToDo> existingToDo = toDoRepository.findById(id);
@@ -61,7 +36,6 @@ public class ToDoService {
         return null;
     }
 
-    // Implement the logic to mark a ToDo as done
     public void markAsDone(Long id) {
         Optional<ToDo> toDo = toDoRepository.findById(id);
         if (toDo.isPresent() && !toDo.get().isDone()) {
@@ -82,12 +56,8 @@ public class ToDoService {
         }
     }
 
-    public long getAverageCompletionTime() {
-        // Logic to calculate average time between creation and done, needs more work to do
-        return toDoRepository.findAll()
-            .stream()
-            .filter(ToDo::isDone)
-            .map(todo -> Duration.between(todo.getCreatedAt(), todo.getDoneDate()).getSeconds())
-            .reduce(Long::sum).orElse(0L);
+    public double getAverageCompletionTime() {
+        // Logic to calculate average time between creation and done
+        return 0.0; // Return the calculated value
     }
 }

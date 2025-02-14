@@ -1,9 +1,10 @@
 package com.example.todo.controller;
 
-import com.example.todo.dto.ToDoPageResponseDto;
 import com.example.todo.model.ToDo;
+import com.example.todo.dto.PaginatedResponse;
 import com.example.todo.model.Priority;
 import com.example.todo.service.ToDoService;
+import com.example.todo.repository.ToDoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,21 +18,29 @@ public class ToDoController {
 
     @Autowired
     private ToDoService toDoService;
+    @Autowired
+    private ToDoRepository toDoRepository;
 
     @GetMapping
-    public ToDoPageResponseDto getTodos(
+    public ResponseEntity<PaginatedResponse<ToDo>> getTodos(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "priority", required = false) Priority priority,
             @RequestParam(value = "done", required = false) Boolean done,
-            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
-        return toDoService.getTodos(name, priority, done, page, size);
+
+        List<ToDo> todos = toDoService.getTodos(name, priority, done, page, size);
+        long totalItems = toDoRepository.findAll().size();
+        int totalPages = (int) Math.ceil((double) totalItems / size);
+
+        PaginatedResponse<ToDo> response = new PaginatedResponse<>(todos, page, totalPages, totalItems);
+        return ResponseEntity.ok(response);
     }
 
-    // PENDING: Implement the logic to create a new ToDo
-    //
-    // @PostMapping
-    // public ToDo createToDo(@RequestBody ToDo todo) { }
+    @PostMapping
+    public ToDo createToDo(@RequestBody ToDo todo) {
+        return toDoService.createToDo(todo);
+    }
 
     @PutMapping("/{id}")
     public ToDo updateToDo(
@@ -42,10 +51,11 @@ public class ToDoController {
         return toDoService.updateToDo(id, name, priority, dueDate);
     }
 
-    // PENDING: Implement the logic to mark a ToDo as done
-    //
-    // @PostMapping("/{id}/done")
-    // public ResponseEntity<Void> markAsDone(@PathVariable Long id) { }
+    @PostMapping("/{id}/done")
+    public ResponseEntity<Void> markAsDone(@PathVariable Long id) {
+        toDoService.markAsDone(id);
+        return ResponseEntity.noContent().build();
+    }
 
     @PutMapping("/{id}/undone")
     public ResponseEntity<Void> markAsUndone(@PathVariable Long id) {
