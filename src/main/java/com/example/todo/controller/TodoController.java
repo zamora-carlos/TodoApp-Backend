@@ -1,5 +1,6 @@
 package com.example.todo.controller;
 
+import com.example.todo.dto.CreateTodoRequest;
 import com.example.todo.dto.PaginatedResponse;
 import com.example.todo.dto.TodoFilter;
 import com.example.todo.dto.TodoResponse;
@@ -7,6 +8,7 @@ import com.example.todo.model.Priority;
 import com.example.todo.model.Todo;
 import com.example.todo.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,8 +34,9 @@ public class TodoController {
     }
 
     @PostMapping
-    public Todo createTodo(@RequestBody Todo todo) {
-        return todoService.createTodo(todo);
+    public ResponseEntity<TodoResponse> createTodo(@RequestBody CreateTodoRequest todo) {
+        TodoResponse createdTodo = todoService.createTodo(todo);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTodo);
     }
 
     @PutMapping("/{id}")

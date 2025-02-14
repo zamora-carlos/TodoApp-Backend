@@ -1,5 +1,6 @@
 package com.example.todo.service;
 
+import com.example.todo.dto.CreateTodoRequest;
 import com.example.todo.dto.PaginatedResponse;
 import com.example.todo.dto.TodoFilter;
 import com.example.todo.dto.TodoResponse;
@@ -53,8 +54,19 @@ public class TodoService {
                 .build();
     }
 
-    public Todo createTodo(Todo todo) {
-        return todoRepository.save(todo);
+    public TodoResponse createTodo(CreateTodoRequest createTodoRequest) {
+        Todo todo = new Todo(createTodoRequest.getText(), createTodoRequest.getPriority());
+        todo.setDueDate(createTodoRequest.getDueDate());
+
+        Todo createdTodo = todoRepository.save(todo);
+
+        return TodoResponse.builder()
+                .id(createdTodo.getId())
+                .text(createdTodo.getText())
+                .priority(createdTodo.getPriority())
+                .isDone(createdTodo.isDone())
+                .dueDate(createdTodo.getDueDate())
+                .build();
     }
 
     public Todo updateTodo(Long id, String name, Priority priority, LocalDateTime dueDate) {

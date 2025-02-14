@@ -1,5 +1,6 @@
 package com.example.todo.service;
 
+import com.example.todo.dto.CreateTodoRequest;
 import com.example.todo.dto.PaginatedResponse;
 import com.example.todo.dto.TodoFilter;
 import com.example.todo.dto.TodoResponse;
@@ -202,10 +203,11 @@ public class TodoServiceTest {
     void testCreateTodo() {
         // Arrange
         Todo todo = new Todo("Created todo", Priority.LOW);
+        CreateTodoRequest todoRequest = new CreateTodoRequest("Created todo", Priority.LOW, null);
         when(todoRepository.save(any(Todo.class))).thenReturn(todo);
 
         // Act
-        Todo createdTodo = todoService.createTodo(todo);
+        TodoResponse createdTodo = todoService.createTodo(todoRequest);
 
         // Assert
         assertNotNull(createdTodo);

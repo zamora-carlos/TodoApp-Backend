@@ -71,8 +71,7 @@ public class TodoControllerTest {
     @Test
     void testCreateTodo() throws Exception {
         // Arrange
-        Todo todo = new Todo("Title", Priority.MEDIUM);
-        todo.setId(1L);
+        TodoResponse todo = new TodoResponse(1L, "Title", Priority.MEDIUM, false, null);
 
         CreateTodoRequest todoRequest = CreateTodoRequest.builder()
                 .text("Title")
