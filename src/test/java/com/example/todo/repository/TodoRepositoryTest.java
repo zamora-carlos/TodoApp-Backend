@@ -1,7 +1,7 @@
 package com.example.todo.repository;
 
 import com.example.todo.model.Priority;
-import com.example.todo.model.ToDo;
+import com.example.todo.model.Todo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,27 +13,27 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class ToDoRepositoryTest {
+public class TodoRepositoryTest {
 
     @Autowired
-    private ToDoRepository toDoRepository;
+    private TodoRepository todoRepository;
 
     @BeforeEach
     void setup() {
-        toDoRepository.deleteAll();
+        todoRepository.deleteAll();
     }
 
     @Test
     void testFindAll() {
         // Arrange
-        ToDo todo1 = new ToDo("First todo", Priority.HIGH);
-        toDoRepository.save(todo1);
+        Todo todo1 = new Todo("First todo", Priority.HIGH);
+        todoRepository.save(todo1);
 
-        ToDo todo2 = new ToDo("Second todo", Priority.MEDIUM);
-        toDoRepository.save(todo2);
+        Todo todo2 = new Todo("Second todo", Priority.MEDIUM);
+        todoRepository.save(todo2);
 
         // Act
-        List<ToDo> todos = toDoRepository.findAll();
+        List<Todo> todos = todoRepository.findAll();
 
         // Assert
         assertEquals(2, todos.size());
@@ -42,11 +42,11 @@ public class ToDoRepositoryTest {
     @Test
     void testFindById() {
         // Arrange
-        ToDo todo = new ToDo("Todo text", Priority.LOW);
-        toDoRepository.save(todo);
+        Todo todo = new Todo("Todo text", Priority.LOW);
+        todoRepository.save(todo);
 
         // Act
-        Optional<ToDo> optionalTodo = toDoRepository.findById(todo.getId());
+        Optional<Todo> optionalTodo = todoRepository.findById(todo.getId());
 
         // Assert
         assertFalse(optionalTodo.isEmpty());
@@ -54,21 +54,21 @@ public class ToDoRepositoryTest {
     }
 
     @Test
-    void testFindById_ToDoNotFound() {
+    void testFindById_TodoNotFound() {
         // Arrange & Act
-        Optional<ToDo> optionalTodo = toDoRepository.findById(1L);
+        Optional<Todo> optionalTodo = todoRepository.findById(1L);
 
         // Assert
         assertTrue(optionalTodo.isEmpty());
     }
 
     @Test
-    void testSaveToDo() {
+    void testSaveTodo() {
         // Arrange
-        ToDo newTodo = new ToDo("Example todo", Priority.LOW);
+        Todo newTodo = new Todo("Example todo", Priority.LOW);
 
         // Act
-        ToDo savedTodo = toDoRepository.save(newTodo);
+        Todo savedTodo = todoRepository.save(newTodo);
 
         // Assert
         assertNotNull(savedTodo.getId());
@@ -76,17 +76,17 @@ public class ToDoRepositoryTest {
     }
 
     @Test
-    void testUpdateToDo() {
+    void testUpdateTodo() {
         // Arrange
-        ToDo todo = new ToDo("New todo", Priority.LOW);
-        toDoRepository.save(todo);
+        Todo todo = new Todo("New todo", Priority.LOW);
+        todoRepository.save(todo);
 
         // Act
         todo.setPriority(Priority.HIGH);
-        toDoRepository.save(todo);
+        todoRepository.save(todo);
 
-        Optional<ToDo> optionalTodo = toDoRepository.findById(todo.getId());
-        List<ToDo> todos = toDoRepository.findAll();
+        Optional<Todo> optionalTodo = todoRepository.findById(todo.getId());
+        List<Todo> todos = todoRepository.findAll();
 
         // Assert
         assertEquals(1, todos.size());
@@ -97,26 +97,26 @@ public class ToDoRepositoryTest {
     @Test
     void testDeleteById() {
         // Arrange
-        ToDo todo = new ToDo("Todo to be deleted", Priority.LOW);
-        toDoRepository.save(todo);
+        Todo todo = new Todo("Todo to be deleted", Priority.LOW);
+        todoRepository.save(todo);
 
         // Act
-        toDoRepository.deleteById(todo.getId());
-        Optional<ToDo> optionalTodo = toDoRepository.findById(todo.getId());
+        todoRepository.deleteById(todo.getId());
+        Optional<Todo> optionalTodo = todoRepository.findById(todo.getId());
 
         // Assert
         assertFalse(optionalTodo.isPresent());
     }
 
     @Test
-    void testDeleteById_ToDoNotFound() {
+    void testDeleteById_TodoNotFound() {
         // Arrange
-        ToDo todo = new ToDo("Another todo", Priority.LOW);
-        toDoRepository.save(todo);
+        Todo todo = new Todo("Another todo", Priority.LOW);
+        todoRepository.save(todo);
 
         // Act
-        toDoRepository.deleteById(todo.getId() + 1);
-        Optional<ToDo> optionalTodo = toDoRepository.findById(todo.getId());
+        todoRepository.deleteById(todo.getId() + 1);
+        Optional<Todo> optionalTodo = todoRepository.findById(todo.getId());
 
         // Assert
         assertTrue(optionalTodo.isPresent());
