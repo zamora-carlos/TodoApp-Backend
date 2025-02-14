@@ -13,4 +13,10 @@ public class UpdateTodoRequest implements Serializable {
     private String text;
     private Priority priority;
     private LocalDateTime dueDate;
+
+    public UpdateTodoRequest(String text, Priority priority, LocalDateTime dueDate) {
+        this.text = text;
+        this.priority = priority;
+        this.dueDate = dueDate;
+    }
 }

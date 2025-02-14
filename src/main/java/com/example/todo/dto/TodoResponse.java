@@ -15,4 +15,12 @@ public class TodoResponse implements Serializable {
     private Priority priority;
     private boolean isDone;
     private LocalDateTime dueDate;
+
+    public TodoResponse(Long id, String text, Priority priority, boolean isDone, LocalDateTime dueDate) {
+        this.id = id;
+        this.text = text;
+        this.priority = priority;
+        this.isDone = isDone;
+        this.dueDate = dueDate;
+    }
 }
