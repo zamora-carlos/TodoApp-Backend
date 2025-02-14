@@ -86,6 +86,10 @@ public class TodoService {
         return null;
     }
 
+    public void deleteTodo(Long id) {
+        todoRepository.deleteById(id);
+    }
+
     public void markAsDone(Long id) {
         Optional<Todo> optionalTodo = todoRepository.findById(id);
         if (optionalTodo.isPresent() && !optionalTodo.get().isDone()) {

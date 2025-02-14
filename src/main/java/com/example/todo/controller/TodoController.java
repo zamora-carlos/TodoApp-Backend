@@ -2,17 +2,15 @@ package com.example.todo.controller;
 
 import com.example.todo.dto.*;
 import com.example.todo.model.Priority;
-import com.example.todo.model.Todo;
 import com.example.todo.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-
 @RestController
 @RequestMapping("/todos")
+@CrossOrigin("*")
 public class TodoController {
 
     @Autowired
@@ -41,6 +39,12 @@ public class TodoController {
             @PathVariable Long id,
             @RequestBody UpdateTodoRequest updateTodoRequest) {
         return todoService.updateTodo(id, updateTodoRequest);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTodo(@PathVariable Long id) {
+        todoService.deleteTodo(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/done")
