@@ -5,7 +5,6 @@ import com.example.todo.dto.TodoFilter;
 import com.example.todo.dto.TodoResponse;
 import com.example.todo.model.Priority;
 import com.example.todo.model.Todo;
-import com.example.todo.repository.TodoRepository;
 import com.example.todo.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +19,8 @@ public class TodoController {
     @Autowired
     private TodoService todoService;
 
-    @Autowired
-    private TodoRepository todoRepository;
-
     @GetMapping
-    public ResponseEntity<PaginatedResponse<TodoResponse>> getTodos(
+    public ResponseEntity<PaginatedResponse<TodoResponse>> getAllTodos(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "priority", required = false) Priority priority,
             @RequestParam(value = "done", required = false) Boolean done,
