@@ -87,6 +87,118 @@ public class TodoServiceTest {
     }
 
     @Test
+    void testGetTodos_FilterByName() {
+        // Arrange
+        TodoFilter filter = new TodoFilter("TH", null, null);
+        List<Todo> todos = Arrays.asList(
+                new Todo("First Todo", Priority.LOW),
+                new Todo("The second todo", Priority.HIGH),
+                new Todo("Third one", Priority.MEDIUM),
+                new Todo("Fourth todo", Priority.LOW));
+
+        when(todoRepository.findAll()).thenReturn(todos);
+
+        // Act
+        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(filter, 1, 2);
+
+        // Assert
+        assertEquals(2, pageResponse.getPageSize());
+        assertEquals(3, pageResponse.getTotalItems());
+
+        assertEquals("The second todo", pageResponse.getContent().getFirst().getText());
+        assertEquals("Third one", pageResponse.getContent().getLast().getText());
+
+        assertEquals("th", pageResponse.getFilter().getName());
+
+        verify(todoRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testGetTodos_FilterByDone() {
+        // Arrange
+        TodoFilter filter = new TodoFilter(null, null, true);
+        List<Todo> todos = Arrays.asList(
+                new Todo("Todo 1", Priority.LOW),
+                new Todo("Todo 2", Priority.HIGH),
+                new Todo("Todo 3", Priority.MEDIUM),
+                new Todo("Todo 4", Priority.LOW));
+
+        todos.get(2).setDone(true);
+        when(todoRepository.findAll()).thenReturn(todos);
+
+        // Act
+        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(filter, 1, 2);
+
+        // Assert
+        assertEquals(1, pageResponse.getTotalPages());
+        assertEquals(1, pageResponse.getTotalItems());
+
+        assertEquals("Todo 3", pageResponse.getContent().getFirst().getText());
+
+        assertTrue(pageResponse.getFilter().getDone());
+
+        verify(todoRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testGetTodos_FilterByNameAndPriority() {
+        // Arrange
+        TodoFilter filter = new TodoFilter("a", Priority.MEDIUM, null);
+        List<Todo> todos = Arrays.asList(
+                new Todo("Todo ABC", Priority.LOW),
+                new Todo("Todo DFG", Priority.HIGH),
+                new Todo("Todo JGF", Priority.MEDIUM),
+                new Todo("Todo AAA", Priority.LOW),
+                new Todo("Todo FJR", Priority.HIGH),
+                new Todo("Todo EDA", Priority.MEDIUM),
+                new Todo("Todo YQA", Priority.MEDIUM),
+                new Todo("Todo AAA", Priority.LOW));
+
+        when(todoRepository.findAll()).thenReturn(todos);
+
+        // Act
+        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(filter, 2, 1);
+
+        // Assert
+        assertEquals(2, pageResponse.getTotalPages());
+        assertEquals(2, pageResponse.getTotalItems());
+
+        assertEquals("Todo YQA", pageResponse.getContent().getFirst().getText());
+
+        assertEquals("a", pageResponse.getFilter().getName());
+        assertEquals(Priority.MEDIUM, pageResponse.getFilter().getPriority());
+
+        verify(todoRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testGetTodos_NoResultsForLargePageNumber() {
+        // Arrange
+        TodoFilter filter = new TodoFilter("O", null, null);
+        List<Todo> todos = Arrays.asList(
+                new Todo("Todo ABC", Priority.LOW),
+                new Todo("Todo DFG", Priority.HIGH),
+                new Todo("Todo JGF", Priority.MEDIUM),
+                new Todo("Todo AAA", Priority.LOW),
+                new Todo("Todo FJR", Priority.HIGH),
+                new Todo("Todo EDA", Priority.MEDIUM),
+                new Todo("Todo YQA", Priority.MEDIUM),
+                new Todo("Todo AAA", Priority.LOW));
+
+        when(todoRepository.findAll()).thenReturn(todos);
+
+        // Act
+        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(filter, 5, 3);
+
+        // Assert
+        assertEquals(5, pageResponse.getCurrentPage());
+        assertEquals(8, pageResponse.getTotalItems());
+        assertEquals(0, pageResponse.getContent().size());
+
+        verify(todoRepository, times(1)).findAll();
+    }
+
+    @Test
     void testCreateTodo() {
         // Arrange
         Todo todo = new Todo("Created todo", Priority.LOW);
