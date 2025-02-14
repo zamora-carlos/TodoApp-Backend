@@ -7,10 +7,10 @@ import java.util.List;
 
 @Data
 @Builder
-public class ToDoPageResponseDto implements Serializable {
+public class TodoPageResponseDto implements Serializable {
     private int currentPage;
     private int pageSize;
     private int totalPages;
     private int totalItems;
-    private List<ToDoDto> data;
+    private List<TodoDto> data;
 }

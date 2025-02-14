@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class ToDoDto implements Serializable {
+public class TodoDto implements Serializable {
     private Long id;
     private String text;
     private LocalDateTime dueDate;

@@ -1,9 +1,9 @@
 package com.example.todo.service;
 
-import com.example.todo.dto.ToDoPageResponseDto;
+import com.example.todo.dto.TodoPageResponseDto;
 import com.example.todo.model.Priority;
-import com.example.todo.model.ToDo;
-import com.example.todo.repository.ToDoRepository;
+import com.example.todo.model.Todo;
+import com.example.todo.repository.TodoRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,45 +19,45 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class ToDoServiceTest {
+public class TodoServiceTest {
 
     @Mock
-    private ToDoRepository toDoRepository;
+    private TodoRepository todoRepository;
 
     @InjectMocks
-    private ToDoService toDoService;
+    private TodoService todoService;
 
     @Test
-    void testGetTodsos() {
-        // Arranges
-        List<ToDo> todos = Arrays.asList(
-            new ToDo("Todo 1", Priority.LOW),
-            new ToDo("Todo 2", Priority.HIGH),
-            new ToDo("Todo 3", Priority.MEDIUM),
-            new ToDo("Todo 4", Priority.LOW)
+    void testGetTodos() {
+        // Arrange
+        List<Todo> todos = Arrays.asList(
+            new Todo("Todo 1", Priority.LOW),
+            new Todo("Todo 2", Priority.HIGH),
+            new Todo("Todo 3", Priority.MEDIUM),
+            new Todo("Todo 4", Priority.LOW)
         );
 
-        when(toDoRepository.findAll()).thenReturn(todos);
+        when(todoRepository.findAll()).thenReturn(todos);
 
         // Act
-        ToDoPageResponseDto pageResponse = toDoService.getTodos(null, null, null, 1, 2);
+        TodoPageResponseDto pageResponse = todoService.getTodos(null, null, null, 1, 2);
 
         // Assert
         assertEquals(1, pageResponse.getCurrentPage());
         assertEquals(2, pageResponse.getPageSize());
         assertEquals(2, pageResponse.getData().size());
         assertEquals(4, pageResponse.getTotalItems());
-        verify(toDoRepository, times(1)).findAll();
+        verify(todoRepository, times(1)).findAll();
     }
 
     @Test
-    void testCreateToDo() {
+    void testCreateTodo() {
         // Arrange
-        ToDo todo = new ToDo("Created todo", Priority.LOW);
-        when(toDoRepository.save(any(ToDo.class))).thenReturn(todo);
+        Todo todo = new Todo("Created todo", Priority.LOW);
+        when(todoRepository.save(any(Todo.class))).thenReturn(todo);
 
         // Act
-        ToDo createdTodo = toDoService.createToDo(todo);
+        Todo createdTodo = todoService.createTodo(todo);
 
         // Assert
         assertNotNull(createdTodo);
@@ -65,80 +65,80 @@ public class ToDoServiceTest {
     }
 
     @Test
-    void testUpdateToDo() {
+    void testUpdateTodo() {
         // Arrange
-        ToDo todo = new ToDo("New todo", Priority.MEDIUM);
+        Todo todo = new Todo("New todo", Priority.MEDIUM);
         todo.setId(1L);
 
-        when(toDoRepository.findById(1L)).thenReturn(Optional.of(todo));
-        when(toDoRepository.save(any(ToDo.class))).thenReturn(todo);
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(todo));
+        when(todoRepository.save(any(Todo.class))).thenReturn(todo);
 
         // Act
-        ToDo updatedToDo = toDoService.updateToDo(1L, "Updated text", Priority.LOW, LocalDateTime.now());
+        Todo updatedTodo = todoService.updateTodo(1L, "Updated text", Priority.LOW, LocalDateTime.now());
 
         // Assert
-        assertEquals("Updated text", updatedToDo.getText());
-        verify(toDoRepository, times(1)).save(todo);
-        verify(toDoRepository, times(1)).findById(1L);
+        assertEquals("Updated text", updatedTodo.getText());
+        verify(todoRepository, times(1)).save(todo);
+        verify(todoRepository, times(1)).findById(1L);
     }
 
     @Test
-    void testUpdateToDo_ToDoNotFound() {
+    void testUpdateTodo_TodoNotFound() {
         // Arrange
-        when(toDoRepository.findById(1L)).thenReturn(Optional.empty());
+        when(todoRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act
-        ToDo updatedToDo = toDoService.updateToDo(1L, "Updated text", Priority.LOW, LocalDateTime.now());
+        Todo updatedTodo = todoService.updateTodo(1L, "Updated text", Priority.LOW, LocalDateTime.now());
 
         // Assert
-        assertNull(updatedToDo);
-        verify(toDoRepository, times(1)).findById(1L);
+        assertNull(updatedTodo);
+        verify(todoRepository, times(1)).findById(1L);
     }
 
     @Test
     void testMarkAsDone() {
         // Arrange
-        ToDo newTodo = new ToDo("Todo", Priority.HIGH);
+        Todo newTodo = new Todo("Todo", Priority.HIGH);
         newTodo.setId(1L);
 
-        when(toDoRepository.findById(1L)).thenReturn(Optional.of(newTodo));
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(newTodo));
 
         // Act
-        toDoService.markAsDone(1L);
+        todoService.markAsDone(1L);
 
         // Assert
         assertTrue(newTodo.isDone());
         assertNotNull(newTodo.getDoneDate());
-        verify(toDoRepository, times(1)).findById(1L);
+        verify(todoRepository, times(1)).findById(1L);
     }
 
     @Test
     void testMarkAsUndone() {
         // Arrange
-        ToDo completedTodo = new ToDo("Todo", Priority.LOW);
+        Todo completedTodo = new Todo("Todo", Priority.LOW);
         completedTodo.setId(1L);
         completedTodo.setDone(true);
         completedTodo.setDoneDate(LocalDateTime.of(2025, 2, 10, 0, 0));
 
-        when(toDoRepository.findById(1L)).thenReturn(Optional.of(completedTodo));
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(completedTodo));
 
         // Act
-        toDoService.markAsUndone(1L);
+        todoService.markAsUndone(1L);
 
         // Assert
         assertFalse(completedTodo.isDone());
         assertNull(completedTodo.getDoneDate());
-        verify(toDoRepository, times(1)).findById(1L);
+        verify(todoRepository, times(1)).findById(1L);
     }
 
     @Test
     void testGetAverageCompletionTime() {
         // Arrange
-        List<ToDo> todos = Arrays.asList(
-                new ToDo("Todo 1", Priority.LOW),
-                new ToDo("Todo 2", Priority.HIGH),
-                new ToDo("Todo 3", Priority.MEDIUM),
-                new ToDo("Todo 4", Priority.LOW)
+        List<Todo> todos = Arrays.asList(
+                new Todo("Todo 1", Priority.LOW),
+                new Todo("Todo 2", Priority.HIGH),
+                new Todo("Todo 3", Priority.MEDIUM),
+                new Todo("Todo 4", Priority.LOW)
         );
 
         todos.getFirst().setDone(true);
@@ -157,13 +157,13 @@ public class ToDoServiceTest {
         todos.get(3).setCreatedAt(LocalDateTime.of(2024, 3, 28, 12, 9, 7, 129));
         todos.get(3).setDoneDate(todos.get(3).getCreatedAt().plusSeconds(55555));
 
-        when(toDoRepository.findAll()).thenReturn(todos);
+        when(todoRepository.findAll()).thenReturn(todos);
 
         // Act
-        long avgCompletionTime = toDoService.getAverageCompletionTime();
+        long avgCompletionTime = todoService.getAverageCompletionTime();
 
         // Assert
         assertEquals((long) 4000 + 231420 + 65324 + 55555, avgCompletionTime);
-        verify(toDoRepository, times(1)).findAll();
+        verify(todoRepository, times(1)).findAll();
     }
 }

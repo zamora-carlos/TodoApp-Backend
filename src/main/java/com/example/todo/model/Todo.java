@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-public class ToDo {
+public class Todo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,12 +25,12 @@ public class ToDo {
     private LocalDateTime createdAt;
 
     // Constructors
-    public ToDo() {
+    public Todo() {
         this.createdAt = LocalDateTime.now();
         this.isDone = false;
     }
 
-    public ToDo(String text, Priority priority) {
+    public Todo(String text, Priority priority) {
         this.priority = priority;
         this.text = text;
     }

@@ -1,10 +1,10 @@
 package com.example.todo.controller;
 
-import com.example.todo.model.ToDo;
+import com.example.todo.model.Todo;
 import com.example.todo.dto.PaginatedResponse;
 import com.example.todo.model.Priority;
-import com.example.todo.service.ToDoService;
-import com.example.todo.repository.ToDoRepository;
+import com.example.todo.service.TodoService;
+import com.example.todo.repository.TodoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,57 +14,57 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/todos")
-public class ToDoController {
+public class TodoController {
 
     @Autowired
-    private ToDoService toDoService;
+    private TodoService todoService;
     @Autowired
-    private ToDoRepository toDoRepository;
+    private TodoRepository todoRepository;
 
     @GetMapping
-    public ResponseEntity<PaginatedResponse<ToDo>> getTodos(
+    public ResponseEntity<PaginatedResponse<Todo>> getTodos(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "priority", required = false) Priority priority,
             @RequestParam(value = "done", required = false) Boolean done,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
-        List<ToDo> todos = toDoService.getTodos(name, priority, done, page, size);
-        long totalItems = toDoRepository.findAll().size();
+        List<Todo> todos = todoService.getTodos(name, priority, done, page, size);
+        long totalItems = todoRepository.findAll().size();
         int totalPages = (int) Math.ceil((double) totalItems / size);
 
-        PaginatedResponse<ToDo> response = new PaginatedResponse<>(todos, page, totalPages, totalItems);
+        PaginatedResponse<Todo> response = new PaginatedResponse<>(todos, page, totalPages, totalItems);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ToDo createToDo(@RequestBody ToDo todo) {
-        return toDoService.createToDo(todo);
+    public Todo createTodo(@RequestBody Todo todo) {
+        return todoService.createTodo(todo);
     }
 
     @PutMapping("/{id}")
-    public ToDo updateToDo(
+    public Todo updateTodo(
             @PathVariable Long id,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "priority", required = false) Priority priority,
             @RequestParam(value = "dueDate", required = false) LocalDateTime dueDate) {
-        return toDoService.updateToDo(id, name, priority, dueDate);
+        return todoService.updateTodo(id, name, priority, dueDate);
     }
 
     @PostMapping("/{id}/done")
     public ResponseEntity<Void> markAsDone(@PathVariable Long id) {
-        toDoService.markAsDone(id);
+        todoService.markAsDone(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}/undone")
     public ResponseEntity<Void> markAsUndone(@PathVariable Long id) {
-        toDoService.markAsUndone(id);
+        todoService.markAsUndone(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/average-time")
     public double getAverageCompletionTime() {
-        return toDoService.getAverageCompletionTime();
+        return todoService.getAverageCompletionTime();
     }
 }
