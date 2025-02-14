@@ -1,5 +1,7 @@
 package com.example.todo.service;
 
+import com.example.todo.dto.PaginatedResponse;
+import com.example.todo.dto.TodoResponse;
 import com.example.todo.model.Priority;
 import com.example.todo.model.Todo;
 import com.example.todo.repository.TodoRepository;
@@ -16,8 +18,35 @@ public class TodoService {
     @Autowired
     private TodoRepository todoRepository;
 
-    public List<Todo> getTodos(String name, Priority priority, Boolean done, int page, int size) {
-        return todoRepository.findAllPaginated(name, priority, done, page, size);
+    public PaginatedResponse<TodoResponse> getTodos(String name, Priority priority, Boolean done, int page, int size) {
+        List<Todo> todos = todoRepository.findAll();
+
+        List<TodoResponse> content = todos.stream()
+                .filter(todo ->
+                        (name == null || todo.getText().toLowerCase().contains(name)) &&
+                        (priority == null || todo.getPriority() == priority) &&
+                        (done == null || todo.isDone() == done))
+                .skip((long) (page - 1) * size)
+                .limit(size)
+                .map(todo -> TodoResponse.builder()
+                        .id(todo.getId())
+                        .text(todo.getText())
+                        .priority(todo.getPriority())
+                        .isDone(todo.isDone())
+                        .dueDate(todo.getDueDate())
+                        .build())
+                .toList();
+
+        long totalItems = todos.size();
+        int totalPages = (int) Math.ceil((double) totalItems / size);
+
+        return PaginatedResponse.<TodoResponse>builder()
+                .content(content)
+                .currentPage(page)
+                .totalPages(totalPages)
+                .pageSize(size)
+                .totalItems(totalItems)
+                .build();
     }
 
     public Todo createTodo(Todo todo) {

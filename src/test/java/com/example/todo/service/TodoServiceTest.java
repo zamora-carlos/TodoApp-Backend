@@ -1,5 +1,7 @@
 package com.example.todo.service;
 
+import com.example.todo.dto.PaginatedResponse;
+import com.example.todo.dto.TodoResponse;
 import com.example.todo.model.Priority;
 import com.example.todo.model.Todo;
 import com.example.todo.repository.TodoRepository;
@@ -38,12 +40,12 @@ public class TodoServiceTest {
         when(todoRepository.findAll()).thenReturn(todos);
 
         // Act
-        TodoPageResponseDto pageResponse = todoService.getTodos(null, null, null, 1, 2);
+        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(null, null, null, 1, 2);
 
         // Assert
         assertEquals(1, pageResponse.getCurrentPage());
         assertEquals(2, pageResponse.getPageSize());
-        assertEquals(2, pageResponse.getData().size());
+        assertEquals(2, pageResponse.getContent().size());
         assertEquals(4, pageResponse.getTotalItems());
         verify(todoRepository, times(1)).findAll();
     }

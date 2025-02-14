@@ -1,6 +1,7 @@
 package com.example.todo.controller;
 
 import com.example.todo.dto.PaginatedResponse;
+import com.example.todo.dto.TodoResponse;
 import com.example.todo.model.Priority;
 import com.example.todo.model.Todo;
 import com.example.todo.repository.TodoRepository;
@@ -10,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/todos")
@@ -23,17 +23,13 @@ public class TodoController {
     private TodoRepository todoRepository;
 
     @GetMapping
-    public ResponseEntity<PaginatedResponse<Todo>> getTodos(
+    public ResponseEntity<PaginatedResponse<TodoResponse>> getTodos(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "priority", required = false) Priority priority,
             @RequestParam(value = "done", required = false) Boolean done,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
-        List<Todo> todos = todoService.getTodos(name, priority, done, page, size);
-        long totalItems = todoRepository.findAll().size();
-        int totalPages = (int) Math.ceil((double) totalItems / size);
-
-        PaginatedResponse<Todo> response = new PaginatedResponse<>(todos, page, totalPages, totalItems);
+        PaginatedResponse<TodoResponse> response = todoService.getTodos(name, priority, done, page, size);
         return ResponseEntity.ok(response);
     }
 
