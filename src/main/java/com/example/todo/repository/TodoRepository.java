@@ -1,8 +1,8 @@
 package com.example.todo.repository;
 
+import com.example.todo.model.Priority;
 import com.example.todo.model.Todo;
 import org.springframework.stereotype.Repository;
-import com.example.todo.model.Priority;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,8 @@ public class TodoRepository {
 
     public List<Todo> findAllPaginated(String name, Priority priority, Boolean done, int page, int size) {
         return todos.stream()
-                .filter(todo -> (name == null || todo.getText().contains(name)) &&
+                .filter(todo ->
+                        (name == null || todo.getText().contains(name)) &&
                         (priority == null || todo.getPriority() == priority) &&
                         (done == null || todo.isDone() == done))
                 .skip((long) page * size)
@@ -28,7 +29,9 @@ public class TodoRepository {
     }
 
     public Optional<Todo> findById(Long id) {
-        return todos.stream().filter(todo -> todo.getId().equals(id)).findFirst();
+        return todos.stream()
+                .filter(todo -> todo.getId().equals(id))
+                .findFirst();
     }
 
     public Todo save(Todo todo) {

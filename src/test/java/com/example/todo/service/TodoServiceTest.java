@@ -31,11 +31,10 @@ public class TodoServiceTest {
     void testGetTodos() {
         // Arrange
         List<Todo> todos = Arrays.asList(
-            new Todo("Todo 1", Priority.LOW),
-            new Todo("Todo 2", Priority.HIGH),
-            new Todo("Todo 3", Priority.MEDIUM),
-            new Todo("Todo 4", Priority.LOW)
-        );
+                new Todo("Todo 1", Priority.LOW),
+                new Todo("Todo 2", Priority.HIGH),
+                new Todo("Todo 3", Priority.MEDIUM),
+                new Todo("Todo 4", Priority.LOW));
 
         when(todoRepository.findAll()).thenReturn(todos);
 
@@ -138,8 +137,7 @@ public class TodoServiceTest {
                 new Todo("Todo 1", Priority.LOW),
                 new Todo("Todo 2", Priority.HIGH),
                 new Todo("Todo 3", Priority.MEDIUM),
-                new Todo("Todo 4", Priority.LOW)
-        );
+                new Todo("Todo 4", Priority.LOW));
 
         todos.getFirst().setDone(true);
         todos.getFirst().setCreatedAt(LocalDateTime.of(2025, 2, 10, 0, 0, 2));

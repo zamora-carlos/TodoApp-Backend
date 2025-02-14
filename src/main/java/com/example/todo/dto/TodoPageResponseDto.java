@@ -1,6 +1,7 @@
 package com.example.todo.dto;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.List;

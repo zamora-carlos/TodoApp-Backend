@@ -1,10 +1,10 @@
 package com.example.todo.controller;
 
-import com.example.todo.model.Todo;
 import com.example.todo.dto.PaginatedResponse;
 import com.example.todo.model.Priority;
-import com.example.todo.service.TodoService;
+import com.example.todo.model.Todo;
 import com.example.todo.repository.TodoRepository;
+import com.example.todo.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +28,6 @@ public class TodoController {
             @RequestParam(value = "done", required = false) Boolean done,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
-
         List<Todo> todos = todoService.getTodos(name, priority, done, page, size);
         long totalItems = todoRepository.findAll().size();
         int totalPages = (int) Math.ceil((double) totalItems / size);
