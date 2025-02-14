@@ -1,9 +1,6 @@
 package com.example.todo.controller;
 
-import com.example.todo.dto.CreateTodoRequest;
-import com.example.todo.dto.PaginatedResponse;
-import com.example.todo.dto.TodoFilter;
-import com.example.todo.dto.TodoResponse;
+import com.example.todo.dto.*;
 import com.example.todo.model.Priority;
 import com.example.todo.model.Todo;
 import com.example.todo.service.TodoService;
@@ -40,12 +37,10 @@ public class TodoController {
     }
 
     @PutMapping("/{id}")
-    public Todo updateTodo(
+    public TodoResponse updateTodo(
             @PathVariable Long id,
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "priority", required = false) Priority priority,
-            @RequestParam(value = "dueDate", required = false) LocalDateTime dueDate) {
-        return todoService.updateTodo(id, name, priority, dueDate);
+            @RequestBody UpdateTodoRequest updateTodoRequest) {
+        return todoService.updateTodo(id, updateTodoRequest);
     }
 
     @PostMapping("/{id}/done")

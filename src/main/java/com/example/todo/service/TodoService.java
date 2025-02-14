@@ -1,9 +1,6 @@
 package com.example.todo.service;
 
-import com.example.todo.dto.CreateTodoRequest;
-import com.example.todo.dto.PaginatedResponse;
-import com.example.todo.dto.TodoFilter;
-import com.example.todo.dto.TodoResponse;
+import com.example.todo.dto.*;
 import com.example.todo.model.Priority;
 import com.example.todo.model.Todo;
 import com.example.todo.repository.TodoRepository;
@@ -69,14 +66,22 @@ public class TodoService {
                 .build();
     }
 
-    public Todo updateTodo(Long id, String name, Priority priority, LocalDateTime dueDate) {
+    public TodoResponse updateTodo(Long id, UpdateTodoRequest updateTodoRequest) {
         Optional<Todo> existingTodo = todoRepository.findById(id);
         if (existingTodo.isPresent()) {
             Todo todo = existingTodo.get();
-            todo.setText(name);
-            todo.setPriority(priority);
-            todo.setDueDate(dueDate);
-            return todoRepository.save(todo);
+            todo.setText(updateTodoRequest.getText());
+            todo.setPriority(updateTodoRequest.getPriority());
+            todo.setDueDate(updateTodoRequest.getDueDate());
+
+            Todo updatedTodo = todoRepository.save(todo);
+            return TodoResponse.builder()
+                    .id(updatedTodo.getId())
+                    .text(updatedTodo.getText())
+                    .priority(updatedTodo.getPriority())
+                    .isDone(updatedTodo.isDone())
+                    .dueDate(updatedTodo.getDueDate())
+                    .build();
         }
         return null;
     }

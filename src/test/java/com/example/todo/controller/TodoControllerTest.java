@@ -1,9 +1,6 @@
 package com.example.todo.controller;
 
-import com.example.todo.dto.CreateTodoRequest;
-import com.example.todo.dto.PaginatedResponse;
-import com.example.todo.dto.TodoFilter;
-import com.example.todo.dto.TodoResponse;
+import com.example.todo.dto.*;
 import com.example.todo.model.Priority;
 import com.example.todo.model.Todo;
 import com.example.todo.service.TodoService;
@@ -88,5 +85,31 @@ public class TodoControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.text").value("Title"))
                 .andExpect(jsonPath("$.id").value(1));
+    }
+
+    @Test
+    void testUpdateTodo() throws Exception {
+        // Arrange
+        UpdateTodoRequest updateTodoRequest = new UpdateTodoRequest("Todo updated", Priority.MEDIUM, LocalDateTime.of(2025, 2, 14, 9, 0));
+        TodoResponse todoResponse = TodoResponse.builder()
+                .id(1L)
+                .text(updateTodoRequest.getText())
+                .priority(updateTodoRequest.getPriority())
+                .isDone(false)
+                .dueDate(updateTodoRequest.getDueDate())
+                .build();
+
+        when(todoService.updateTodo(eq(1L), any(UpdateTodoRequest.class))).thenReturn(todoResponse);
+
+        // Act & Assert
+        mockMvc.perform(put("/todos/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateTodoRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.dueDate").value("2025-02-14T09:00:00"))
+                .andExpect(jsonPath("$.text").value(updateTodoRequest.getText()))
+                .andExpect(jsonPath("$.id").value(1));
+
+        verify(todoService, times(1)).updateTodo(eq(1L), any(UpdateTodoRequest.class));
     }
 }
