@@ -1,7 +1,6 @@
 package com.example.todo.dto;
 
 import com.example.todo.model.Priority;
-
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,10 +9,8 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class TodoDto implements Serializable {
-    private Long id;
+public class CreateTodoRequest implements Serializable {
     private String text;
-    private LocalDateTime dueDate;
     private Priority priority;
-    private boolean isDone;
+    private LocalDateTime dueDate;
 }

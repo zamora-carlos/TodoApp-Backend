@@ -18,6 +18,7 @@ public class TodoController {
 
     @Autowired
     private TodoService todoService;
+
     @Autowired
     private TodoRepository todoRepository;
 
@@ -26,7 +27,7 @@ public class TodoController {
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "priority", required = false) Priority priority,
             @RequestParam(value = "done", required = false) Boolean done,
-            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
         List<Todo> todos = todoService.getTodos(name, priority, done, page, size);
         long totalItems = todoRepository.findAll().size();

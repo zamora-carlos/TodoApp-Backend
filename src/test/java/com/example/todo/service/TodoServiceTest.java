@@ -1,6 +1,5 @@
 package com.example.todo.service;
 
-import com.example.todo.dto.TodoPageResponseDto;
 import com.example.todo.model.Priority;
 import com.example.todo.model.Todo;
 import com.example.todo.repository.TodoRepository;
