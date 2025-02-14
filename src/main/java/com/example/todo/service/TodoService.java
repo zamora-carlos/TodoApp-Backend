@@ -21,13 +21,14 @@ public class TodoService {
     private TodoRepository todoRepository;
 
     public PaginatedResponse<TodoResponse> getTodos(TodoFilter filter, int page, int size) {
-        List<Todo> todos = todoRepository.findAll();
-
-        List<TodoResponse> content = todos.stream()
+        List<Todo> filteredTodos = todoRepository.findAll()
+                .stream()
                 .filter(todo ->
                         (filter.getName() == null || todo.getText().toLowerCase().contains(filter.getName())) &&
                         (filter.getPriority() == null || todo.getPriority() == filter.getPriority()) &&
-                        (filter.getDone() == null || todo.isDone() == filter.getDone()))
+                        (filter.getDone() == null || todo.isDone() == filter.getDone())).toList();
+
+        List<TodoResponse> content = filteredTodos.stream()
                 .skip((long) (page - 1) * size)
                 .limit(size)
                 .map(todo -> TodoResponse.builder()
@@ -39,7 +40,7 @@ public class TodoService {
                         .build())
                 .toList();
 
-        long totalItems = todos.size();
+        long totalItems = filteredTodos.size();
         int totalPages = (int) Math.ceil((double) totalItems / size);
 
         return PaginatedResponse.<TodoResponse>builder()
@@ -59,11 +60,11 @@ public class TodoService {
     public Todo updateTodo(Long id, String name, Priority priority, LocalDateTime dueDate) {
         Optional<Todo> existingTodo = todoRepository.findById(id);
         if (existingTodo.isPresent()) {
-            Todo toDo = existingTodo.get();
-            toDo.setText(name);
-            toDo.setPriority(priority);
-            toDo.setDueDate(dueDate);
-            return todoRepository.save(toDo);
+            Todo todo = existingTodo.get();
+            todo.setText(name);
+            todo.setPriority(priority);
+            todo.setDueDate(dueDate);
+            return todoRepository.save(todo);
         }
         return null;
     }
