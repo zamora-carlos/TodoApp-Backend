@@ -1,9 +1,9 @@
 package com.example.todo.service;
 
 import com.example.todo.dto.*;
-import com.example.todo.enums.Priority;
-import com.example.todo.enums.SortCriteria;
-import com.example.todo.enums.SortOrder;
+import com.example.todo.enums.*;
+import com.example.todo.exception.TodoNotFoundException;
+import com.example.todo.mapper.TodoMapper;
 import com.example.todo.model.Todo;
 import com.example.todo.repository.TodoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +39,7 @@ public class TodoService {
         List<TodoResponse> content = filteredTodos.stream()
                 .skip((long) (page - 1) * size)
                 .limit(size)
-                .map(todo -> TodoResponse.builder()
-                        .id(todo.getId())
-                        .text(todo.getText())
-                        .priority(todo.getPriority())
-                        .isDone(todo.isDone())
-                        .dueDate(todo.getDueDate())
-                        .build())
+                .map(TodoMapper::toTodoResponse)
                 .toList();
 
         long totalItems = filteredTodos.size();
@@ -60,19 +54,20 @@ public class TodoService {
                 .build();
     }
 
-    public TodoResponse createTodo(CreateTodoRequest createTodoRequest) {
-        Todo todo = new Todo(createTodoRequest.getText(), createTodoRequest.getPriority());
-        todo.setDueDate(createTodoRequest.getDueDate());
+    public Todo getTodoById(Long id) {
+        return todoRepository.findById(id)
+                .orElseThrow(() -> new TodoNotFoundException(
+                        String.format("The todo with id %d was not found", id)));
+    }
 
+    public TodoResponse createTodo(CreateTodoRequest createTodoRequest) {
+        Todo todo = new Todo(
+                createTodoRequest.getText(),
+                createTodoRequest.getPriority(),
+                createTodoRequest.getDueDate());
         Todo createdTodo = todoRepository.save(todo);
 
-        return TodoResponse.builder()
-                .id(createdTodo.getId())
-                .text(createdTodo.getText())
-                .priority(createdTodo.getPriority())
-                .isDone(createdTodo.isDone())
-                .dueDate(createdTodo.getDueDate())
-                .build();
+        return TodoMapper.toTodoResponse(createdTodo);
     }
 
     public TodoResponse updateTodo(Long id, UpdateTodoRequest updateTodoRequest) {
@@ -84,13 +79,8 @@ public class TodoService {
             todo.setDueDate(updateTodoRequest.getDueDate());
 
             Todo updatedTodo = todoRepository.save(todo);
-            return TodoResponse.builder()
-                    .id(updatedTodo.getId())
-                    .text(updatedTodo.getText())
-                    .priority(updatedTodo.getPriority())
-                    .isDone(updatedTodo.isDone())
-                    .dueDate(updatedTodo.getDueDate())
-                    .build();
+
+            return TodoMapper.toTodoResponse(updatedTodo);
         }
         return null;
     }
