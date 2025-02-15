@@ -3,6 +3,7 @@ package com.example.todo.controller;
 import com.example.todo.dto.*;
 import com.example.todo.enums.*;
 import com.example.todo.exception.TodoNotFoundException;
+import com.example.todo.mapper.TodoMapper;
 import com.example.todo.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,12 @@ public class TodoController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{id")
+    public ResponseEntity<TodoResponse> getTodo(@PathVariable Long id) {
+        TodoResponse todo = TodoMapper.toTodoResponse(todoService.getTodoById(id));
+        return ResponseEntity.ok(todo);
+    }
+
     @PostMapping
     public ResponseEntity<TodoResponse> createTodo(@RequestBody CreateTodoRequest todo) {
         TodoResponse createdTodo = todoService.createTodo(todo);
@@ -47,16 +54,10 @@ public class TodoController {
             @RequestBody UpdateTodoRequest updateTodoRequest) {
 
         TodoResponse updatedTodo = todoService.updateTodo(id, updateTodoRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(updatedTodo);
+        return ResponseEntity.ok(updatedTodo);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTodo(@PathVariable Long id) {
-        todoService.deleteTodo(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/{id}/done")
+    @PutMapping("/{id}/done")
     public ResponseEntity<Void> markAsDone(@PathVariable Long id) {
         todoService.markAsDone(id);
         return ResponseEntity.noContent().build();
@@ -65,6 +66,12 @@ public class TodoController {
     @PutMapping("/{id}/undone")
     public ResponseEntity<Void> markAsUndone(@PathVariable Long id) {
         todoService.markAsUndone(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTodo(@PathVariable Long id) {
+        todoService.deleteTodo(id);
         return ResponseEntity.noContent().build();
     }
 
