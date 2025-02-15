@@ -1,12 +1,15 @@
 package com.example.todo.controller;
 
 import com.example.todo.dto.*;
-import com.example.todo.model.Priority;
+import com.example.todo.enums.*;
+import com.example.todo.exception.TodoNotFoundException;
 import com.example.todo.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/todos")
@@ -18,13 +21,17 @@ public class TodoController {
 
     @GetMapping
     public ResponseEntity<PaginatedResponse<TodoResponse>> getAllTodos(
-            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "text", required = false) String text,
             @RequestParam(value = "priority", required = false) Priority priority,
             @RequestParam(value = "done", required = false) Boolean done,
             @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size) {
-        TodoFilter filter = new TodoFilter(name, priority, done);
-        PaginatedResponse<TodoResponse> response = todoService.getTodos(filter, page, size);
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort_by", defaultValue = "TEXT") SortCriteria sortBy,
+            @RequestParam(value = "order", defaultValue = "ASC") SortOrder order) {
+
+        PaginatedResponse<TodoResponse> response = todoService.getTodos(
+                text, priority, done, page, size, sortBy, order);
+
         return ResponseEntity.ok(response);
     }
 
@@ -35,10 +42,12 @@ public class TodoController {
     }
 
     @PutMapping("/{id}")
-    public TodoResponse updateTodo(
+    public ResponseEntity<TodoResponse> updateTodo(
             @PathVariable Long id,
             @RequestBody UpdateTodoRequest updateTodoRequest) {
-        return todoService.updateTodo(id, updateTodoRequest);
+
+        TodoResponse updatedTodo = todoService.updateTodo(id, updateTodoRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(updatedTodo);
     }
 
     @DeleteMapping("/{id}")
@@ -59,8 +68,15 @@ public class TodoController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/average-time")
-    public double getAverageCompletionTime() {
-        return todoService.getAverageCompletionTime();
+    @GetMapping("/metrics")
+    public ResponseEntity<MetricsResponse> getAverageCompletionTime() {
+        return ResponseEntity.ok(todoService.getMetrics());
+    }
+
+    @ExceptionHandler(TodoNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleTodoNotFoundException(TodoNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorResponse(404, ex.getMessage(), LocalDateTime.now())
+        );
     }
 }

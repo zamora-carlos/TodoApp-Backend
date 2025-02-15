@@ -1,6 +1,6 @@
 package com.example.todo.repository;
 
-import com.example.todo.model.Priority;
+import com.example.todo.enums.Priority;
 import com.example.todo.model.Todo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Repository
 public class TodoRepository {
     private final List<Todo> todos = new ArrayList<>();
-    private final AtomicLong counter = new AtomicLong(0);
+    private final AtomicLong counter = new AtomicLong(1);
 
     public List<Todo> findAll() {
         return todos;
