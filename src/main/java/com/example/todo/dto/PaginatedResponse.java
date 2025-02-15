@@ -14,5 +14,4 @@ public class PaginatedResponse<T> implements Serializable {
     private int totalPages;
     private int pageSize;
     private long totalItems;
-    private TodoFilter filter;
 }

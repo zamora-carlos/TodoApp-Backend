@@ -1,5 +1,7 @@
 package com.example.todo.model;
 
+import com.example.todo.enums.Priority;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 

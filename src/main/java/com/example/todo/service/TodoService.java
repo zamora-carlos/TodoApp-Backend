@@ -1,7 +1,9 @@
 package com.example.todo.service;
 
 import com.example.todo.dto.*;
-import com.example.todo.model.Priority;
+import com.example.todo.enums.Priority;
+import com.example.todo.enums.SortCriteria;
+import com.example.todo.enums.SortOrder;
 import com.example.todo.model.Todo;
 import com.example.todo.repository.TodoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +20,21 @@ public class TodoService {
     @Autowired
     private TodoRepository todoRepository;
 
-    public PaginatedResponse<TodoResponse> getTodos(TodoFilter filter, int page, int size) {
+    public PaginatedResponse<TodoResponse> getTodos(
+            String text,
+            Priority priority,
+            Boolean isDone,
+            int page,
+            int size,
+            SortCriteria sortBy,
+            SortOrder order) {
         List<Todo> filteredTodos = todoRepository.findAll()
                 .stream()
                 .filter(todo ->
-                        (filter.getName() == null || todo.getText().toLowerCase().contains(filter.getName())) &&
-                        (filter.getPriority() == null || todo.getPriority() == filter.getPriority()) &&
-                        (filter.getDone() == null || todo.isDone() == filter.getDone())).toList();
+                        (text == null || todo.getText().toLowerCase().contains(text) &&
+                        (priority == null || todo.getPriority().equals(priority)) &&
+                        (isDone == null || todo.isDone() == isDone)))
+                .toList();
 
         List<TodoResponse> content = filteredTodos.stream()
                 .skip((long) (page - 1) * size)
@@ -47,7 +57,6 @@ public class TodoService {
                 .totalPages(totalPages)
                 .pageSize(size)
                 .totalItems(totalItems)
-                .filter(filter)
                 .build();
     }
 

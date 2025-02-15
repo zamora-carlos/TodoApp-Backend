@@ -1,7 +1,9 @@
 package com.example.todo.service;
 
 import com.example.todo.dto.*;
-import com.example.todo.model.Priority;
+import com.example.todo.enums.Priority;
+import com.example.todo.enums.SortCriteria;
+import com.example.todo.enums.SortOrder;
 import com.example.todo.model.Todo;
 import com.example.todo.repository.TodoRepository;
 import org.junit.jupiter.api.Test;
@@ -30,7 +32,6 @@ public class TodoServiceTest {
     @Test
     void testGetTodos() {
         // Arrange
-        TodoFilter filter = new TodoFilter(null, null, null);
         List<Todo> todos = Arrays.asList(
                 new Todo("Todo 1", Priority.LOW),
                 new Todo("Todo 2", Priority.HIGH),
@@ -40,7 +41,7 @@ public class TodoServiceTest {
         when(todoRepository.findAll()).thenReturn(todos);
 
         // Act
-        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(filter, 1, 2);
+        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(null, null, null,1, 2, SortCriteria.TEXT, SortOrder.ASC);
 
         // Assert
         assertEquals(1, pageResponse.getCurrentPage());
@@ -57,7 +58,6 @@ public class TodoServiceTest {
     @Test
     void testGetTodos_FilterByPriority() {
         // Arrange
-        TodoFilter filter = new TodoFilter(null, Priority.LOW, null);
         List<Todo> todos = Arrays.asList(
                 new Todo("Todo 1", Priority.LOW),
                 new Todo("Todo 2", Priority.HIGH),
@@ -67,7 +67,7 @@ public class TodoServiceTest {
         when(todoRepository.findAll()).thenReturn(todos);
 
         // Act
-        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(filter, 1, 2);
+        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(null, Priority.LOW, null, 1, 2, SortCriteria.TEXT, SortOrder.ASC);
 
         // Assert
         assertEquals(1, pageResponse.getCurrentPage());
@@ -79,15 +79,12 @@ public class TodoServiceTest {
         assertEquals("Todo 1", pageResponse.getContent().getFirst().getText());
         assertEquals("Todo 4", pageResponse.getContent().getLast().getText());
 
-        assertEquals(Priority.LOW, pageResponse.getFilter().getPriority());
-
         verify(todoRepository, times(1)).findAll();
     }
 
     @Test
     void testGetTodos_FilterByName() {
         // Arrange
-        TodoFilter filter = new TodoFilter("TH", null, null);
         List<Todo> todos = Arrays.asList(
                 new Todo("First Todo", Priority.LOW),
                 new Todo("The second todo", Priority.HIGH),
@@ -97,7 +94,7 @@ public class TodoServiceTest {
         when(todoRepository.findAll()).thenReturn(todos);
 
         // Act
-        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(filter, 1, 2);
+        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos("TH", null, null, 1, 2, SortCriteria.TEXT, SortOrder.ASC);
 
         // Assert
         assertEquals(2, pageResponse.getPageSize());
@@ -106,15 +103,12 @@ public class TodoServiceTest {
         assertEquals("The second todo", pageResponse.getContent().getFirst().getText());
         assertEquals("Third one", pageResponse.getContent().getLast().getText());
 
-        assertEquals("th", pageResponse.getFilter().getName());
-
         verify(todoRepository, times(1)).findAll();
     }
 
     @Test
     void testGetTodos_FilterByDone() {
         // Arrange
-        TodoFilter filter = new TodoFilter(null, null, true);
         List<Todo> todos = Arrays.asList(
                 new Todo("Todo 1", Priority.LOW),
                 new Todo("Todo 2", Priority.HIGH),
@@ -125,7 +119,7 @@ public class TodoServiceTest {
         when(todoRepository.findAll()).thenReturn(todos);
 
         // Act
-        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(filter, 1, 2);
+        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(null, null, true, 1, 2, SortCriteria.TEXT, SortOrder.ASC);
 
         // Assert
         assertEquals(1, pageResponse.getTotalPages());
@@ -133,15 +127,12 @@ public class TodoServiceTest {
 
         assertEquals("Todo 3", pageResponse.getContent().getFirst().getText());
 
-        assertTrue(pageResponse.getFilter().getDone());
-
         verify(todoRepository, times(1)).findAll();
     }
 
     @Test
     void testGetTodos_FilterByNameAndPriority() {
         // Arrange
-        TodoFilter filter = new TodoFilter("a", Priority.MEDIUM, null);
         List<Todo> todos = Arrays.asList(
                 new Todo("Todo ABC", Priority.LOW),
                 new Todo("Todo DFG", Priority.HIGH),
@@ -155,7 +146,7 @@ public class TodoServiceTest {
         when(todoRepository.findAll()).thenReturn(todos);
 
         // Act
-        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(filter, 2, 1);
+        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos("a", Priority.MEDIUM, null, 2, 1, SortCriteria.TEXT, SortOrder.ASC);
 
         // Assert
         assertEquals(2, pageResponse.getTotalPages());
@@ -163,16 +154,12 @@ public class TodoServiceTest {
 
         assertEquals("Todo YQA", pageResponse.getContent().getFirst().getText());
 
-        assertEquals("a", pageResponse.getFilter().getName());
-        assertEquals(Priority.MEDIUM, pageResponse.getFilter().getPriority());
-
         verify(todoRepository, times(1)).findAll();
     }
 
     @Test
     void testGetTodos_NoResultsForLargePageNumber() {
         // Arrange
-        TodoFilter filter = new TodoFilter("O", null, null);
         List<Todo> todos = Arrays.asList(
                 new Todo("Todo ABC", Priority.LOW),
                 new Todo("Todo DFG", Priority.HIGH),
@@ -186,7 +173,7 @@ public class TodoServiceTest {
         when(todoRepository.findAll()).thenReturn(todos);
 
         // Act
-        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(filter, 5, 3);
+        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos("O", null, null, 5, 3, SortCriteria.TEXT, SortOrder.ASC);
 
         // Assert
         assertEquals(5, pageResponse.getCurrentPage());

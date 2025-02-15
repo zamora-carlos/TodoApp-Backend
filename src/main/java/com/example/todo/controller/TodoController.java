@@ -1,7 +1,9 @@
 package com.example.todo.controller;
 
 import com.example.todo.dto.*;
-import com.example.todo.model.Priority;
+import com.example.todo.enums.Priority;
+import com.example.todo.enums.SortCriteria;
+import com.example.todo.enums.SortOrder;
 import com.example.todo.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,13 +20,21 @@ public class TodoController {
 
     @GetMapping
     public ResponseEntity<PaginatedResponse<TodoResponse>> getAllTodos(
-            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "text", required = false) String text,
             @RequestParam(value = "priority", required = false) Priority priority,
             @RequestParam(value = "done", required = false) Boolean done,
             @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size) {
-        TodoFilter filter = new TodoFilter(name, priority, done);
-        PaginatedResponse<TodoResponse> response = todoService.getTodos(filter, page, size);
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort_by", defaultValue = "TEXT") SortCriteria sortBy,
+            @RequestParam(value = "order", defaultValue = "ASC") SortOrder order) {
+        PaginatedResponse<TodoResponse> response = todoService.getTodos(
+                text != null ? text.toLowerCase() : null,
+                priority,
+                done,
+                page,
+                size,
+                sortBy,
+                order);
         return ResponseEntity.ok(response);
     }
 

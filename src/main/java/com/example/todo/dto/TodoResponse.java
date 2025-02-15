@@ -1,6 +1,7 @@
 package com.example.todo.dto;
 
-import com.example.todo.model.Priority;
+import com.example.todo.enums.Priority;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,6 +9,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
+@AllArgsConstructor
 @Builder
 public class TodoResponse implements Serializable {
     private Long id;
@@ -15,12 +17,4 @@ public class TodoResponse implements Serializable {
     private Priority priority;
     private boolean isDone;
     private LocalDateTime dueDate;
-
-    public TodoResponse(Long id, String text, Priority priority, boolean isDone, LocalDateTime dueDate) {
-        this.id = id;
-        this.text = text;
-        this.priority = priority;
-        this.isDone = isDone;
-        this.dueDate = dueDate;
-    }
 }
