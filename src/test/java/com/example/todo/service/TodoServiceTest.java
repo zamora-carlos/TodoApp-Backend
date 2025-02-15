@@ -4,6 +4,7 @@ import com.example.todo.dto.*;
 import com.example.todo.enums.Priority;
 import com.example.todo.enums.SortCriteria;
 import com.example.todo.enums.SortOrder;
+import com.example.todo.exception.TodoNotFoundException;
 import com.example.todo.model.Todo;
 import com.example.todo.repository.TodoRepository;
 import org.junit.jupiter.api.Test;
@@ -220,12 +221,10 @@ public class TodoServiceTest {
     void testUpdateTodo_TodoNotFound() {
         // Arrange
         when(todoRepository.findById(1L)).thenReturn(Optional.empty());
+        UpdateTodoRequest updateTodoRequest = new UpdateTodoRequest("Updated text", Priority.LOW, LocalDateTime.now());
 
-        // Act
-        TodoResponse updatedTodo = todoService.updateTodo(1L, new UpdateTodoRequest("Updated text", Priority.LOW, LocalDateTime.now()));
-
-        // Assert
-        assertNull(updatedTodo);
+        // Act & Assert
+        assertThrows(TodoNotFoundException.class, () -> todoService.updateTodo( 1L, updateTodoRequest));
         verify(todoRepository, times(1)).findById(1L);
     }
 

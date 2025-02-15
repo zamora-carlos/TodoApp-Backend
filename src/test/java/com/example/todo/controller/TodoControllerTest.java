@@ -102,7 +102,7 @@ public class TodoControllerTest {
         mockMvc.perform(put("/todos/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateTodoRequest)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.dueDate").value("2025-02-14T09:00:00"))
                 .andExpect(jsonPath("$.text").value(updateTodoRequest.getText()))
                 .andExpect(jsonPath("$.id").value(1));

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TodoService {
@@ -61,28 +60,15 @@ public class TodoService {
     }
 
     public TodoResponse createTodo(CreateTodoRequest createTodoRequest) {
-        Todo todo = new Todo(
-                createTodoRequest.getText(),
-                createTodoRequest.getPriority(),
-                createTodoRequest.getDueDate());
-        Todo createdTodo = todoRepository.save(todo);
-
-        return TodoMapper.toTodoResponse(createdTodo);
+        Todo todo = TodoMapper.createTodoFromRequest(createTodoRequest);
+        return TodoMapper.toTodoResponse(todoRepository.save(todo));
     }
 
     public TodoResponse updateTodo(Long id, UpdateTodoRequest updateTodoRequest) {
-        Optional<Todo> existingTodo = todoRepository.findById(id);
-        if (existingTodo.isPresent()) {
-            Todo todo = existingTodo.get();
-            todo.setText(updateTodoRequest.getText());
-            todo.setPriority(updateTodoRequest.getPriority());
-            todo.setDueDate(updateTodoRequest.getDueDate());
+        Todo todo = getTodoById(id);
+        TodoMapper.updateTodoFromRequest(todo, updateTodoRequest);
 
-            Todo updatedTodo = todoRepository.save(todo);
-
-            return TodoMapper.toTodoResponse(updatedTodo);
-        }
-        return null;
+        return TodoMapper.toTodoResponse(todoRepository.save(todo));
     }
 
     public void deleteTodo(Long id) {
@@ -90,9 +76,9 @@ public class TodoService {
     }
 
     public void markAsDone(Long id) {
-        Optional<Todo> optionalTodo = todoRepository.findById(id);
-        if (optionalTodo.isPresent() && !optionalTodo.get().isDone()) {
-            Todo todo = optionalTodo.get();
+        Todo todo = getTodoById(id);
+
+        if (!todo.isDone()) {
             todo.setDone(true);
             todo.setDoneDate(LocalDateTime.now());
             todoRepository.save(todo);
@@ -100,9 +86,9 @@ public class TodoService {
     }
 
     public void markAsUndone(Long id) {
-        Optional<Todo> optionalTodo = todoRepository.findById(id);
-        if (optionalTodo.isPresent() && optionalTodo.get().isDone()) {
-            Todo todo = optionalTodo.get();
+        Todo todo = getTodoById(id);
+
+        if (todo.isDone()) {
             todo.setDone(false);
             todo.setDoneDate(null);
             todoRepository.save(todo);
