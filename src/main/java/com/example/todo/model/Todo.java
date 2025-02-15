@@ -35,6 +35,8 @@ public class Todo {
     public Todo(String text, Priority priority) {
         this.priority = priority;
         this.text = text;
+        this.isDone = false;
+        this.createdAt = LocalDateTime.now();
     }
 
     // Getters and Setters for all fields

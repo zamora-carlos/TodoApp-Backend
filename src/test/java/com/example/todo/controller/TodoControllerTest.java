@@ -50,7 +50,7 @@ public class TodoControllerTest {
                 .totalItems(2)
                 .build();
 
-        when(todoService.getTodos("task", Priority.HIGH, null, 1, 5, SortCriteria.TEXT, SortOrder.ASC)).thenReturn(pageResponse);
+        when(todoService.getTodos("Task", Priority.HIGH, null, 1, 5, SortCriteria.TEXT, SortOrder.ASC)).thenReturn(pageResponse);
 
         // Act & Assert
         mockMvc.perform(get("/todos?text=Task&priority=HIGH&size=5")
@@ -59,7 +59,7 @@ public class TodoControllerTest {
                 .andExpect(jsonPath("$.totalItems").value(2))
                 .andExpect(jsonPath("$.content[0].text").value("Task 1"));
 
-        verify(todoService, times(1)).getTodos("task", Priority.HIGH, null, 1, 5, SortCriteria.TEXT, SortOrder.ASC);
+        verify(todoService, times(1)).getTodos("Task", Priority.HIGH, null, 1, 5, SortCriteria.TEXT, SortOrder.ASC);
     }
 
     @Test

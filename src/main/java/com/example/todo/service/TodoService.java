@@ -31,9 +31,9 @@ public class TodoService {
         List<Todo> filteredTodos = todoRepository.findAll()
                 .stream()
                 .filter(todo ->
-                        (text == null || todo.getText().toLowerCase().contains(text) &&
+                        (text == null || todo.getText().toLowerCase().contains(text.toLowerCase())) &&
                         (priority == null || todo.getPriority().equals(priority)) &&
-                        (isDone == null || todo.isDone() == isDone)))
+                        (isDone == null || isDone.equals(todo.isDone())))
                 .toList();
 
         List<TodoResponse> content = filteredTodos.stream()

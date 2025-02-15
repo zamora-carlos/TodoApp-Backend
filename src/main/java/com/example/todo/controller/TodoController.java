@@ -28,7 +28,7 @@ public class TodoController {
             @RequestParam(value = "sort_by", defaultValue = "TEXT") SortCriteria sortBy,
             @RequestParam(value = "order", defaultValue = "ASC") SortOrder order) {
         PaginatedResponse<TodoResponse> response = todoService.getTodos(
-                text != null ? text.toLowerCase() : null,
+                text,
                 priority,
                 done,
                 page,
