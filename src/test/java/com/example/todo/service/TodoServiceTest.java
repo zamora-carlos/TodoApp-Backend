@@ -95,13 +95,13 @@ public class TodoServiceTest {
         when(todoRepository.findAll()).thenReturn(todos);
 
         // Act
-        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos("TH", null, null, 1, 2, SortCriteria.TEXT, SortOrder.ASC);
+        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos("TH", null, null, 1, 3, SortCriteria.TEXT, SortOrder.ASC);
 
         // Assert
-        assertEquals(2, pageResponse.getPageSize());
+        assertEquals(3, pageResponse.getPageSize());
         assertEquals(3, pageResponse.getTotalItems());
 
-        assertEquals("The second todo", pageResponse.getContent().getFirst().getText());
+        assertEquals("Fourth todo", pageResponse.getContent().getFirst().getText());
         assertEquals("Third one", pageResponse.getContent().getLast().getText());
 
         verify(todoRepository, times(1)).findAll();

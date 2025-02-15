@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -29,12 +30,12 @@ public class TodoService {
             SortCriteria sortBy,
             SortOrder order) {
 
-        List<Todo> sortedTodos = getSortedTodos(todoRepository.findAll(), sortBy, order);
-
         List<Todo> filteredTodos = getFilteredTodos(
-                sortedTodos, text != null ? text.toLowerCase() : null, priority, isDone);
+                todoRepository.findAll(), text != null ? text.toLowerCase() : null, priority, isDone);
 
-        List<TodoResponse> content = getPaginatedTodos(filteredTodos, page, size);
+        List<Todo> sortedTodos = getSortedTodos(filteredTodos, sortBy, order);
+
+        List<TodoResponse> content = getPaginatedTodos(sortedTodos, page, size);
 
         long totalItems = filteredTodos.size();
         int totalPages = (int) Math.ceil((double) totalItems / size);
@@ -145,9 +146,10 @@ public class TodoService {
                     .thenComparing(Todo::getText);
         };
 
-        todos.sort(comparator);
+        List<Todo> sortedTodos = new ArrayList<>(todos);
+        sortedTodos.sort(comparator);
 
-        return todos;
+        return sortedTodos;
     }
 
     private static List<Todo> getFilteredTodos(List<Todo> todos, String text, Priority priority, Boolean isDone) {
