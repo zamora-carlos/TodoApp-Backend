@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -28,8 +29,10 @@ public class TodoService {
             SortCriteria sortBy,
             SortOrder order) {
 
+        List<Todo> sortedTodos = getSortedTodos(todoRepository.findAll(), sortBy, order);
+
         List<Todo> filteredTodos = getFilteredTodos(
-                text != null ? text.toLowerCase() : null, priority, isDone);
+                sortedTodos, text != null ? text.toLowerCase() : null, priority, isDone);
 
         List<TodoResponse> content = getPaginatedTodos(filteredTodos, page, size);
 
@@ -96,24 +99,6 @@ public class TodoService {
                 .build();
     }
 
-    private List<Todo> getFilteredTodos(String text, Priority priority, Boolean isDone) {
-        return todoRepository.findAll()
-                .stream()
-                .filter(todo ->
-                        (text == null || todo.getText().toLowerCase().contains(text)) &&
-                        (priority == null || todo.getPriority() == priority) &&
-                        (isDone == null || isDone.equals(todo.isDone())))
-                .toList();
-    }
-
-    private List<TodoResponse> getPaginatedTodos(List<Todo> todos, int page, int size) {
-        return todos.stream()
-                .skip((long) (page - 1) * size)
-                .limit(size)
-                .map(TodoMapper::toTodoResponse)
-                .toList();
-    }
-
     private long getAverageCompletionTimeByPriority(Priority priority) {
         List<Todo> filteredTodos = todoRepository.findAll()
                 .stream()
@@ -125,5 +110,60 @@ public class TodoService {
                 .sum();
 
         return filteredTodos.isEmpty() ? 0L : Math.round((double) totalTime / filteredTodos.size());
+    }
+
+    private static int compareDueDates(LocalDateTime date1, LocalDateTime date2) {
+        if (date1 == null && date2 == null) return 0;
+        if (date1 == null) return 1;
+        if (date2 == null) return -1;
+
+        return date1.compareTo(date2);
+    }
+
+    private static List<Todo> getSortedTodos(List<Todo> todos, SortCriteria sortBy, SortOrder order) {
+        Comparator<Todo> comparator = switch (sortBy) {
+            case TEXT -> Comparator
+                    .comparing(Todo::getText,
+                            order == SortOrder.ASC
+                                    ? Comparator.naturalOrder()
+                                    : Comparator.reverseOrder())
+                    .thenComparing(Todo::getPriority, Comparator.reverseOrder())
+                    .thenComparing((todo1, todo2) -> compareDueDates(todo1.getDueDate(), todo2.getDueDate()));
+            case PRIORITY -> Comparator
+                    .comparing(Todo::getPriority,
+                            order == SortOrder.ASC
+                                    ? Comparator.naturalOrder()
+                                    : Comparator.reverseOrder())
+                    .thenComparing((todo1, todo2) -> compareDueDates(todo1.getDueDate(), todo2.getDueDate()))
+                    .thenComparing(Todo::getText);
+            case DUE_DATE -> Comparator
+                    .comparing(Todo::getDueDate,
+                            order == SortOrder.ASC
+                                    ? Comparator.nullsLast(LocalDateTime::compareTo).reversed()
+                                    : Comparator.nullsLast(LocalDateTime::compareTo))
+                    .thenComparing(Todo::getPriority, Comparator.reverseOrder())
+                    .thenComparing(Todo::getText);
+        };
+
+        todos.sort(comparator);
+
+        return todos;
+    }
+
+    private static List<Todo> getFilteredTodos(List<Todo> todos, String text, Priority priority, Boolean isDone) {
+        return todos.stream()
+                .filter(todo ->
+                        (text == null || todo.getText().toLowerCase().contains(text)) &&
+                        (priority == null || todo.getPriority() == priority) &&
+                        (isDone == null || isDone.equals(todo.isDone())))
+                .toList();
+    }
+
+    private static List<TodoResponse> getPaginatedTodos(List<Todo> todos, int page, int size) {
+        return todos.stream()
+                .skip((long) (page - 1) * size)
+                .limit(size)
+                .map(TodoMapper::toTodoResponse)
+                .toList();
     }
 }

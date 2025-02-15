@@ -36,7 +36,6 @@ public class TodoMapper {
                 .build();
     }
 
-
     public static UpdateTodoRequest toUpdateTodoRequest(Todo todo) {
         return UpdateTodoRequest.builder()
                 .text(todo.getText())
