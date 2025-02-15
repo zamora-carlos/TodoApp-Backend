@@ -27,19 +27,11 @@ public class TodoService {
             int size,
             SortCriteria sortBy,
             SortOrder order) {
-        List<Todo> filteredTodos = todoRepository.findAll()
-                .stream()
-                .filter(todo ->
-                        (text == null || todo.getText().toLowerCase().contains(text.toLowerCase())) &&
-                        (priority == null || todo.getPriority().equals(priority)) &&
-                        (isDone == null || isDone.equals(todo.isDone())))
-                .toList();
 
-        List<TodoResponse> content = filteredTodos.stream()
-                .skip((long) (page - 1) * size)
-                .limit(size)
-                .map(TodoMapper::toTodoResponse)
-                .toList();
+        List<Todo> filteredTodos = getFilteredTodos(
+                text != null ? text.toLowerCase() : null, priority, isDone);
+
+        List<TodoResponse> content = getPaginatedTodos(filteredTodos, page, size);
 
         long totalItems = filteredTodos.size();
         int totalPages = (int) Math.ceil((double) totalItems / size);
@@ -102,6 +94,24 @@ public class TodoService {
                 .avgTimeMedium(getAverageCompletionTimeByPriority(Priority.MEDIUM))
                 .avgTimeHigh(getAverageCompletionTimeByPriority(Priority.HIGH))
                 .build();
+    }
+
+    private List<Todo> getFilteredTodos(String text, Priority priority, Boolean isDone) {
+        return todoRepository.findAll()
+                .stream()
+                .filter(todo ->
+                        (text == null || todo.getText().toLowerCase().contains(text)) &&
+                        (priority == null || todo.getPriority() == priority) &&
+                        (isDone == null || isDone.equals(todo.isDone())))
+                .toList();
+    }
+
+    private List<TodoResponse> getPaginatedTodos(List<Todo> todos, int page, int size) {
+        return todos.stream()
+                .skip((long) (page - 1) * size)
+                .limit(size)
+                .map(TodoMapper::toTodoResponse)
+                .toList();
     }
 
     private long getAverageCompletionTimeByPriority(Priority priority) {

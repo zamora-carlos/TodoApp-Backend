@@ -1,9 +1,7 @@
 package com.example.todo.controller;
 
 import com.example.todo.dto.*;
-import com.example.todo.enums.Priority;
-import com.example.todo.enums.SortCriteria;
-import com.example.todo.enums.SortOrder;
+import com.example.todo.enums.*;
 import com.example.todo.exception.TodoNotFoundException;
 import com.example.todo.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,14 +28,10 @@ public class TodoController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort_by", defaultValue = "TEXT") SortCriteria sortBy,
             @RequestParam(value = "order", defaultValue = "ASC") SortOrder order) {
+
         PaginatedResponse<TodoResponse> response = todoService.getTodos(
-                text,
-                priority,
-                done,
-                page,
-                size,
-                sortBy,
-                order);
+                text, priority, done, page, size, sortBy, order);
+
         return ResponseEntity.ok(response);
     }
 
@@ -51,6 +45,7 @@ public class TodoController {
     public ResponseEntity<TodoResponse> updateTodo(
             @PathVariable Long id,
             @RequestBody UpdateTodoRequest updateTodoRequest) {
+
         TodoResponse updatedTodo = todoService.updateTodo(id, updateTodoRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(updatedTodo);
     }
