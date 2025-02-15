@@ -119,11 +119,25 @@ public class TodoService {
         }
     }
 
-    public long getAverageCompletionTime() {
-        return todoRepository.findAll()
+    public MetricsResponse getMetrics() {
+        return MetricsResponse.builder()
+                .avgTime(getAverageCompletionTimeByPriority(null))
+                .avgTimeLow(getAverageCompletionTimeByPriority(Priority.LOW))
+                .avgTimeMedium(getAverageCompletionTimeByPriority(Priority.MEDIUM))
+                .avgTimeHigh(getAverageCompletionTimeByPriority(Priority.HIGH))
+                .build();
+    }
+
+    private long getAverageCompletionTimeByPriority(Priority priority) {
+        List<Todo> filteredTodos = todoRepository.findAll()
                 .stream()
-                .filter(Todo::isDone)
-                .map(todo -> Duration.between(todo.getCreatedAt(), todo.getDoneDate()).getSeconds())
-                .reduce(Long::sum).orElse(0L);
+                .filter(todo -> todo.isDone() && (priority == null || todo.getPriority() == priority))
+                .toList();
+
+        long totalTime = filteredTodos.stream()
+                .mapToLong(todo -> Duration.between(todo.getCreatedAt(), todo.getDoneDate()).getSeconds())
+                .sum();
+
+        return filteredTodos.isEmpty() ? 0L : Math.round((double) totalTime / filteredTodos.size());
     }
 }

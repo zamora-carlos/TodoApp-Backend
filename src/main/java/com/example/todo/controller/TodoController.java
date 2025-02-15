@@ -69,8 +69,8 @@ public class TodoController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/average-time")
-    public double getAverageCompletionTime() {
-        return todoService.getAverageCompletionTime();
+    @GetMapping("/metrics")
+    public ResponseEntity<MetricsResponse> getAverageCompletionTime() {
+        return ResponseEntity.ok(todoService.getMetrics());
     }
 }

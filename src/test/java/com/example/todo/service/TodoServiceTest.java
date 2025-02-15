@@ -293,10 +293,13 @@ public class TodoServiceTest {
         when(todoRepository.findAll()).thenReturn(todos);
 
         // Act
-        long avgCompletionTime = todoService.getAverageCompletionTime();
+        MetricsResponse metrics = todoService.getMetrics();
 
         // Assert
-        assertEquals((long) 4000 + 231420 + 65324 + 55555, avgCompletionTime);
-        verify(todoRepository, times(1)).findAll();
+        assertEquals(Math.round((double) (4000 + 231420 + 65324 + 55555) / 4), metrics.getAvgTime());
+        assertEquals(Math.round((double) (4000 + 55555) / 2), metrics.getAvgTimeLow());
+        assertEquals(65324L, metrics.getAvgTimeMedium());
+        assertEquals(231420L, metrics.getAvgTimeHigh());
+        verify(todoRepository, times(4)).findAll();
     }
 }
