@@ -2,7 +2,6 @@ package com.example.todo.controller;
 
 import com.example.todo.dto.*;
 import com.example.todo.enums.*;
-import com.example.todo.exception.TodoNotFoundException;
 import com.example.todo.mapper.TodoMapper;
 import com.example.todo.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/todos")
@@ -79,12 +76,5 @@ public class TodoController {
     @GetMapping("/metrics")
     public ResponseEntity<MetricsResponse> getAverageCompletionTime() {
         return ResponseEntity.ok(todoService.getMetrics());
-    }
-
-    @ExceptionHandler(TodoNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleTodoNotFoundException(TodoNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                new ErrorResponse(404, ex.getMessage(), LocalDateTime.now())
-        );
     }
 }

@@ -52,7 +52,7 @@ public class TodoService {
     public Todo getTodoById(Long id) {
         return todoRepository.findById(id)
                 .orElseThrow(() -> new TodoNotFoundException(
-                        String.format("The todo with id %d was not found", id)));
+                        String.format("The todo with id %d was not found.", id)));
     }
 
     public TodoResponse createTodo(CreateTodoRequest createTodoRequest) {
