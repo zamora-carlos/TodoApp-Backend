@@ -2,7 +2,6 @@ package com.example.todo.dto;
 
 import com.example.todo.enums.Priority;
 import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

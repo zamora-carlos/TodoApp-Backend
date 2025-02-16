@@ -8,6 +8,7 @@ import com.example.todo.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -36,14 +37,14 @@ public class TodoController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id")
+    @GetMapping("/{id}")
     public ResponseEntity<TodoResponse> getTodo(@PathVariable Long id) {
         TodoResponse todo = TodoMapper.toTodoResponse(todoService.getTodoById(id));
         return ResponseEntity.ok(todo);
     }
 
     @PostMapping
-    public ResponseEntity<TodoResponse> createTodo(@RequestBody CreateTodoRequest todo) {
+    public ResponseEntity<TodoResponse> createTodo(@Validated @RequestBody CreateTodoRequest todo) {
         TodoResponse createdTodo = todoService.createTodo(todo);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTodo);
     }
@@ -51,7 +52,7 @@ public class TodoController {
     @PutMapping("/{id}")
     public ResponseEntity<TodoResponse> updateTodo(
             @PathVariable Long id,
-            @RequestBody UpdateTodoRequest updateTodoRequest) {
+            @Validated @RequestBody UpdateTodoRequest updateTodoRequest) {
 
         TodoResponse updatedTodo = todoService.updateTodo(id, updateTodoRequest);
         return ResponseEntity.ok(updatedTodo);
