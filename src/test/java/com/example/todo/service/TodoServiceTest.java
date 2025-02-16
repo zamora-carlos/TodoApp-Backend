@@ -7,8 +7,10 @@ import com.example.todo.enums.SortOrder;
 import com.example.todo.exception.TodoNotFoundException;
 import com.example.todo.model.Todo;
 import com.example.todo.repository.TodoRepository;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,30 +32,74 @@ public class TodoServiceTest {
     @InjectMocks
     private TodoService todoService;
 
-    @Test
-    void testGetTodos() {
-        // Arrange
-        List<Todo> todos = Arrays.asList(
-                new Todo("Todo 1", Priority.LOW),
-                new Todo("Todo 2", Priority.HIGH),
-                new Todo("Todo 3", Priority.MEDIUM),
-                new Todo("Todo 4", Priority.LOW));
+    @Nested
+    public class GetTodosTests {
+        
+        static List<Todo> todos;
+        
+        @BeforeAll
+        public static void setup() {
+            todos = List.of(
+                    new Todo("Alpha project planning", Priority.MEDIUM, LocalDateTime.now().plusDays(3)),
+                    new Todo("Buy groceries", Priority.LOW, LocalDateTime.now().plusDays(1)),
+                    new Todo("Complete report", Priority.HIGH, LocalDateTime.now().plusDays(2)),
+                    new Todo("Draft email to team", Priority.MEDIUM, LocalDateTime.now().plusDays(5)),
+                    new Todo("Exercise for 30 minutes", Priority.MEDIUM, null),
+                    new Todo("Fix broken pipeline", Priority.HIGH, LocalDateTime.now().plusHours(6)),
+                    new Todo("Gather feedback from stakeholders", Priority.MEDIUM, LocalDateTime.now().plusDays(4)),
+                    new Todo("Host meeting", Priority.MEDIUM, null),
+                    new Todo("Improve UI design", Priority.LOW, LocalDateTime.now().plusDays(7)),
+                    new Todo("Join coding workshop", Priority.MEDIUM, LocalDateTime.now().plusDays(3)),
+                    new Todo("Kickoff new marketing campaign", Priority.HIGH, LocalDateTime.now().plusDays(1)),
+                    new Todo("Learn Spring Boot basics", Priority.LOW, null),
+                    new Todo("Manage team assignment", Priority.MEDIUM, LocalDateTime.now().plusDays(10)),
+                    new Todo("Notify users about changes", Priority.MEDIUM, LocalDateTime.now().plusDays(5)),
+                    new Todo("Organize desk space", Priority.LOW, null),
+                    new Todo("Plan upcoming sprints", Priority.MEDIUM, LocalDateTime.now().plusDays(2)),
+                    new Todo("Quick bug fix", Priority.HIGH, LocalDateTime.now().plusHours(3)),
+                    new Todo("Review pull request", Priority.MEDIUM, LocalDateTime.now().plusHours(12)),
+                    new Todo("Schedule team outing", Priority.LOW, LocalDateTime.now().plusDays(14)),
+                    new Todo("Test new feature deployment", Priority.HIGH, LocalDateTime.now().plusHours(24)),
+                    new Todo("Update documentation", Priority.MEDIUM, LocalDateTime.now().plusDays(3)),
+                    new Todo("Write monthly newsletter", Priority.LOW, LocalDateTime.now().plusDays(9)),
+                    new Todo("Xerox meeting agenda", Priority.LOW, LocalDateTime.now().plusHours(5)),
+                    new Todo("Verify backup status", Priority.MEDIUM, LocalDateTime.now().plusDays(2)),
+                    new Todo("Year-end performance reviews", Priority.MEDIUM, LocalDateTime.now().plusDays(6)),
+                    new Todo("Zoom conference call", Priority.MEDIUM, LocalDateTime.now().plusDays(4)),
+                    new Todo("Analyze new requirements", Priority.HIGH, LocalDateTime.now().plusHours(8)),
+                    new Todo("Back up project files", Priority.LOW, null),
+                    new Todo("Create presentation slides", Priority.MEDIUM, LocalDateTime.now().plusDays(3)),
+                    new Todo("Deploy production build", Priority.HIGH, LocalDateTime.now().plusHours(18))
+            );
+        }
 
-        when(todoRepository.findAll()).thenReturn(todos);
+        @ParameterizedTest
+        @CsvSource({
+                "1, 2, 2, 15",
+                "3, 2, 2, 15",
+                "8, 4, 2, 8",
+                "9, 1, 1, 30",
+                "3, 9, 9, 4",
+                "10, 5, 0, 6",
+                "3, 12, 6, 3",
+                "1, 50, 30, 1"
+        })
+        public void testPaginationResults(int page, int pageSize, int todosOnPage, int totalPages) {
+            // Arrange
+            when(todoRepository.findAll()).thenReturn(todos);
 
-        // Act
-        PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(null, null, null,1, 2, SortCriteria.TEXT, SortOrder.ASC);
+            // Act
+            PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(
+                    null, null, null, page, pageSize, SortCriteria.TEXT, SortOrder.ASC);
 
-        // Assert
-        assertEquals(1, pageResponse.getCurrentPage());
-        assertEquals(2, pageResponse.getPageSize());
-        assertEquals(2, pageResponse.getContent().size());
-        assertEquals(4, pageResponse.getTotalItems());
+            // Assert
+            assertEquals(page, pageResponse.getCurrentPage());
+            assertEquals(pageSize, pageResponse.getPageSize());
+            assertEquals(totalPages, pageResponse.getTotalPages());
+            assertEquals(todosOnPage, pageResponse.getContent().size());
 
-        assertEquals("Todo 1", pageResponse.getContent().getFirst().getText());
-        assertEquals("Todo 2", pageResponse.getContent().getLast().getText());
-
-        verify(todoRepository, times(1)).findAll();
+            verify(todoRepository, times(1)).findAll();
+        }
     }
 
     @Test
