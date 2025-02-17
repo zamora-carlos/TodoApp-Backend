@@ -82,18 +82,24 @@ Status code `200` (OK).
 {
   "content": [
     {
-      "id": 1,
+      "id": 21,
       "text": "Buy groceries",
       "priority": "HIGH",
       "isDone": false,
       "dueDate": "2025-02-17T10:00:00"
     },
-    ...
+    {
+      "id": 22,
+      "text": "Clean the dishes",
+      "priority": "LOW",
+      "isDone": true,
+      "dueDate": "2025-02-15T10:25:00"
+    }
   ],
-  "currentPage": 1,
+  "currentPage": 3,
   "totalPages": 3,
   "pageSize": 10,
-  "totalItems": 25
+  "totalItems": 22
 }
 ```
 
