@@ -4,6 +4,7 @@ import com.example.todo.dto.*;
 import com.example.todo.enums.*;
 import com.example.todo.mapper.TodoMapper;
 import com.example.todo.service.TodoService;
+import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,8 @@ public class TodoController {
             @RequestParam(value = "text", required = false) String text,
             @RequestParam(value = "priority", required = false) Priority priority,
             @RequestParam(value = "done", required = false) Boolean done,
-            @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+            @RequestParam(value = "size", defaultValue = "10") @Min(1) int size,
             @RequestParam(value = "sort_by", defaultValue = "TEXT") SortCriteria sortBy,
             @RequestParam(value = "order", defaultValue = "ASC") SortOrder order) {
 
