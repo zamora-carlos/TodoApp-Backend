@@ -36,18 +36,17 @@ public class TodoMapper {
                 .build();
     }
 
-    public static UpdateTodoRequest toUpdateTodoRequest(Todo todo) {
-        return UpdateTodoRequest.builder()
-                .text(todo.getText())
-                .priority(todo.getPriority())
-                .dueDate(todo.getDueDate())
-                .build();
-    }
+    public static void updateTodoFromRequest(Todo todo, UpdateTodoRequest updateTodoRequest) {
+        if (updateTodoRequest.getText() != null) {
+            todo.setText(updateTodoRequest.getText());
+        }
 
-    public static Todo updateTodoFromRequest(Todo todo, UpdateTodoRequest updateTodoRequest) {
-        todo.setText(updateTodoRequest.getText());
-        todo.setPriority(updateTodoRequest.getPriority());
-        todo.setDueDate(updateTodoRequest.getDueDate());
-        return todo;
+        if (updateTodoRequest.getPriority() != null) {
+            todo.setPriority(updateTodoRequest.getPriority());
+        }
+
+        if (updateTodoRequest.getDueDate() != null) {
+            todo.setDueDate(updateTodoRequest.getDueDate());
+        }
     }
 }
