@@ -3,6 +3,7 @@ package com.example.todo.service;
 import com.example.todo.dto.*;
 import com.example.todo.enums.*;
 import com.example.todo.exception.TodoNotFoundException;
+import com.example.todo.mapper.TodoMapper;
 import com.example.todo.model.Todo;
 import com.example.todo.repository.TodoRepository;
 import org.junit.jupiter.api.*;
@@ -224,7 +225,7 @@ public class TodoServiceTest {
     void testCreateTodo() {
         // Arrange
         Todo todo = new Todo("Created todo", Priority.LOW);
-        CreateTodoRequest todoRequest = new CreateTodoRequest("Created todo", Priority.LOW, null);
+        CreateTodoRequest todoRequest = TodoMapper.toCreateTodoRequest(todo);
         when(todoRepository.save(any(Todo.class))).thenReturn(todo);
 
         // Act
@@ -238,8 +239,11 @@ public class TodoServiceTest {
     @Test
     void testUpdateTodo() {
         // Arrange
-        Todo todo = new Todo("New todo", Priority.MEDIUM);
-        todo.setId(1L);
+        Todo todo = Todo.builder()
+                .id(1L)
+                .text("New todo")
+                .priority(Priority.MEDIUM)
+                .build();
 
         when(todoRepository.findById(1L)).thenReturn(Optional.of(todo));
         when(todoRepository.save(any(Todo.class))).thenReturn(todo);
@@ -267,8 +271,11 @@ public class TodoServiceTest {
     @Test
     void testMarkAsDone() {
         // Arrange
-        Todo newTodo = new Todo("Todo", Priority.HIGH);
-        newTodo.setId(1L);
+        Todo newTodo = Todo.builder()
+                .id(1L)
+                .text("Todo")
+                .priority(Priority.HIGH)
+                .build();
 
         when(todoRepository.findById(1L)).thenReturn(Optional.of(newTodo));
 
@@ -284,10 +291,13 @@ public class TodoServiceTest {
     @Test
     void testMarkAsUndone() {
         // Arrange
-        Todo completedTodo = new Todo("Todo", Priority.LOW);
-        completedTodo.setId(1L);
-        completedTodo.setDone(true);
-        completedTodo.setDoneDate(LocalDateTime.of(2025, 2, 10, 0, 0));
+        Todo completedTodo = Todo.builder()
+                .id(1L)
+                .text("Todo")
+                .priority(Priority.LOW)
+                .isDone(true)
+                .doneDate(LocalDateTime.of(2025, 2, 10, 0, 0))
+                .build();
 
         when(todoRepository.findById(1L)).thenReturn(Optional.of(completedTodo));
 
@@ -304,26 +314,34 @@ public class TodoServiceTest {
     void testGetAverageCompletionTime() {
         // Arrange
         List<Todo> todos = Arrays.asList(
-                new Todo("Todo 1", Priority.LOW),
-                new Todo("Todo 2", Priority.HIGH),
-                new Todo("Todo 3", Priority.MEDIUM),
-                new Todo("Todo 4", Priority.LOW));
-
-        todos.getFirst().setDone(true);
-        todos.getFirst().setCreatedAt(LocalDateTime.of(2025, 2, 10, 0, 0, 2));
-        todos.getFirst().setDoneDate(todos.getFirst().getCreatedAt().plusSeconds(4000));
-
-        todos.get(1).setDone(true);
-        todos.get(1).setCreatedAt(LocalDateTime.of(2025, 1, 17, 5, 32, 2));
-        todos.get(1).setDoneDate(todos.get(1).getCreatedAt().plusSeconds(231420));
-
-        todos.get(2).setDone(true);
-        todos.get(2).setCreatedAt(LocalDateTime.of(2024, 9, 14, 18, 21, 58));
-        todos.get(2).setDoneDate(todos.get(2).getCreatedAt().plusSeconds(65324));
-
-        todos.get(3).setDone(true);
-        todos.get(3).setCreatedAt(LocalDateTime.of(2024, 3, 28, 12, 9, 7, 129));
-        todos.get(3).setDoneDate(todos.get(3).getCreatedAt().plusSeconds(55555));
+                Todo.builder()
+                        .text("Todo 1")
+                        .priority(Priority.LOW)
+                        .isDone(true)
+                        .createdAt(LocalDateTime.of(2025, 2, 10, 0, 0, 2))
+                        .doneDate(LocalDateTime.of(2025, 2, 10, 0, 0, 2).plusSeconds(4000))
+                        .build(),
+                Todo.builder()
+                        .text("Todo 2")
+                        .priority(Priority.HIGH)
+                        .isDone(true)
+                        .createdAt(LocalDateTime.of(2025, 1, 17, 5, 32, 2))
+                        .doneDate(LocalDateTime.of(2025, 1, 17, 5, 32, 2).plusSeconds(231420))
+                        .build(),
+                Todo.builder()
+                        .text("Todo 2")
+                        .priority(Priority.MEDIUM)
+                        .isDone(true)
+                        .createdAt(LocalDateTime.of(2024, 9, 14, 18, 21, 58))
+                        .doneDate(LocalDateTime.of(2024, 9, 14, 18, 21, 58).plusSeconds(65324))
+                        .build(),
+                Todo.builder()
+                        .text("Todo 4")
+                        .priority(Priority.LOW)
+                        .isDone(true)
+                        .createdAt(LocalDateTime.of(2024, 3, 28, 12, 9, 7, 129))
+                        .doneDate(LocalDateTime.of(2024, 3, 28, 12, 9, 7, 129).plusSeconds(55555))
+                        .build());
 
         when(todoRepository.findAll()).thenReturn(todos);
 
