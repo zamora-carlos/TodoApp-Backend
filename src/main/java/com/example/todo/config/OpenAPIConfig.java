@@ -1,5 +1,6 @@
 package com.example.todo.config;
 
+import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.Contact;
@@ -13,17 +14,16 @@ public class OpenAPIConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("ToDo API")
-                        .description("This API helps to manage your ToDo list.")
+                        .title("TodoApp API")
+                        .description("This API helps to manage your todo list.")
                         .version("1.0")
                         .contact(new Contact()
-                                .name("Your Name")
-                                .email("your-email@example.com")
-                                .url("your-website.com"))
-                        .termsOfService("Terms of service URL")
-                        .license(new io.swagger.v3.oas.models.info.License()
-                                .name("License")
-                                .url("License URL")));
+                                .name("Carlos Zamora")
+                                .email("czamora5@ucol.mx")
+                                .url("https://carlos-zamora.netlify.app")))
+                .addServersItem(new Server()
+                        .description("Local environment")
+                        .url("http://localhost:9090"));
     }
 }
 
