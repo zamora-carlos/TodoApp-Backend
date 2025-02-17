@@ -198,6 +198,26 @@ public class TodoServiceTest {
             assertTrue(allAttributesMatch);
             assertEquals(expectedResults, pageResponse.getContent().size());
         }
+
+        @ParameterizedTest
+        @CsvSource({
+                "TEXT, ASC, Alpha project planning",
+                "TEXT, DESC, Zoom conference call",
+                "PRIORITY, ASC, Xerox meeting agenda",
+                "PRIORITY, DESC, Quick bug fix",
+                "DUE_DATE, ASC, Quick bug fix",
+                "DUE_DATE, DESC, Exercise for 30 minutes"
+        })
+        void testSortingPaginationResults(SortCriteria sortBy, SortOrder order, String textExpectedFirst) {
+            // Arrange
+            when(todoRepository.findAll()).thenReturn(todos);
+
+            // Act
+            PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(null, null, null, 1, 30, sortBy, order);
+
+            // Assert
+            assertEquals(textExpectedFirst, pageResponse.getContent().getFirst().getText());
+        }
     }
 
     @Test
