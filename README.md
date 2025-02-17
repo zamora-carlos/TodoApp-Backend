@@ -215,6 +215,87 @@ Status code `204` (No Content) with no body.
 
 ---
 
+## Error handling
+
+In case of invalid input or errors, the API returns appropriate HTTP status codes and error messages.
+
+### 400 Bad Request
+
+If the request body is invalid or missing required fields.
+
+<details>
+
+<summary>See examples</summary>
+
+```json
+{
+  "code": 400,
+  "message": "Query parameter 'id' could not be converted to 'Long' type.",
+  "timestamp": "2025-02-16T23:29:38.672545"
+}
+```
+
+```json
+{
+  "code": 400,
+  "message": "Malformed JSON request body or invalid data format.",
+  "timestamp": "2025-02-16T23:30:33.501053"
+}
+```
+
+```json
+
+{
+  "code": 400,
+  "message": "Validation failed for one or more fields.",
+  "timestamp": "2025-02-16T23:31:15.311695",
+  "errors": [
+    {
+      "field": "priority",
+      "message": "Priority is required.",
+      "rejectedValue": null
+    },
+    {
+      "field": "dueDate",
+      "message": "Due date must be either today or in the future.",
+      "rejectedValue": "2024-10-17T04:11:39.564"
+    },
+    {
+      "field": "text",
+      "message": "Text should be between 3 and 120 characters.",
+      "rejectedValue": "hi"
+    }
+  ]
+}
+```
+</details>
+
+### 404 Not Found
+
+If a Todo with the specified ID is not found.
+
+```json
+{
+  "code": 404,
+  "message": "The todo with id 1 was not found.",
+  "timestamp": "2025-02-16T23:29:22.154758"
+}
+```
+
+### 500 Internal Server Error
+
+For server-side issues and other unhandled exceptions.
+
+```json
+{
+  "code": 500,
+  "message": "An unexpected error occurred.",
+  "timestamp": "2025-02-16T23:30:11.506533"
+}
+```
+
+---
+
 ## Data Storage
 
 Data is stored in-memory using a Java List.
