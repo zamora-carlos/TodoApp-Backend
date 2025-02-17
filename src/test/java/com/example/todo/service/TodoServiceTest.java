@@ -35,10 +35,10 @@ public class TodoServiceTest {
     @Nested
     public class GetTodosTests {
         
-        static List<Todo> todos;
+        private static List<Todo> todos;
         
         @BeforeAll
-        public static void setup() {
+        static void setup() {
             todos = List.of(
                     new Todo("Alpha project planning", Priority.MEDIUM, LocalDateTime.now().plusDays(3)),
                     new Todo("Buy groceries", Priority.LOW, LocalDateTime.now().plusDays(1)),
@@ -84,7 +84,7 @@ public class TodoServiceTest {
                 "3, 12, 6, 3",
                 "1, 50, 30, 1"
         })
-        public void testPaginationResults(int page, int pageSize, int todosOnPage, int totalPages) {
+        void testPaginationResults(int page, int pageSize, int todosOnPage, int totalPages) {
             // Arrange
             when(todoRepository.findAll()).thenReturn(todos);
 
@@ -99,6 +99,31 @@ public class TodoServiceTest {
             assertEquals(todosOnPage, pageResponse.getContent().size());
 
             verify(todoRepository, times(1)).findAll();
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "TEAM, 3",
+                "x, 4",
+                " , 30",
+                ", 30",
+                "a long text that is not in any todo, 0",
+                "A, 19",
+                "back, 3",
+                "e r, 2"
+        })
+        void testFilterByText(String text, int expectedResults) {
+            // Arrange
+            when(todoRepository.findAll()).thenReturn(todos);
+
+            // Act
+            PaginatedResponse<TodoResponse> pageResponse = todoService.getTodos(text, null, null, 1, 30, SortCriteria.TEXT, SortOrder.ASC);
+            boolean allTodosContainText = pageResponse.getContent().stream()
+                    .allMatch(todo -> text == null || todo.getText().toLowerCase().contains(text.toLowerCase()));
+
+            // Assert
+            assertTrue(allTodosContainText);
+            assertEquals(expectedResults, pageResponse.getContent().size());
         }
     }
 
