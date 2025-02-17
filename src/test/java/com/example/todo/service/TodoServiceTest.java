@@ -258,7 +258,28 @@ public class TodoServiceTest {
     }
 
     @Test
-    void testUpdateTodo_TodoNotFound() {
+    void testUpdateTodo_emptyFields() {
+        // Arrange
+        Todo todo = Todo.builder()
+                .id(1L)
+                .text("New todo")
+                .priority(Priority.MEDIUM)
+                .dueDate(LocalDateTime.now())
+                .build();
+
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(todo));
+        when(todoRepository.save(any(Todo.class))).thenReturn(todo);
+
+        // Act
+        TodoResponse updatedTodo = todoService.updateTodo(1L, new UpdateTodoRequest("Updated text", null, null));
+
+        // Assert
+        assertSame(Priority.MEDIUM, updatedTodo.getPriority());
+        assertNotNull(updatedTodo.getDueDate());
+    }
+
+    @Test
+    void testUpdateTodo_todoNotFound() {
         // Arrange
         when(todoRepository.findById(1L)).thenReturn(Optional.empty());
         UpdateTodoRequest updateTodoRequest = new UpdateTodoRequest("Updated text", Priority.LOW, LocalDateTime.now());
