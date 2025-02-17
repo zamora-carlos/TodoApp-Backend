@@ -6,8 +6,10 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,7 +35,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiErrorResponse);
     }
 
-
     // Validation exceptions for request body 400
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
@@ -46,6 +47,34 @@ public class GlobalExceptionHandler {
 
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse(
                 400, "Validation failed for one or more fields.", LocalDateTime.now(), errorDetails
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiErrorResponse);
+    }
+
+    // Query string parameter conversion failure
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String errorMessage;
+
+        if (ex.getRequiredType() != null) {
+            errorMessage = String.format("Query parameter '%s' could not be converted to '%s' type.", ex.getName(), ex.getRequiredType().getSimpleName());
+        } else {
+            errorMessage = String.format("Query parameter '%s' could not be converted.", ex.getName());
+        }
+
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse(
+                400, errorMessage, LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiErrorResponse);
+    }
+
+    // Request body deserialization failure
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse(
+                400, "Malformed JSON request body or invalid data format.", LocalDateTime.now()
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiErrorResponse);
