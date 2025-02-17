@@ -1,6 +1,6 @@
 package com.example.todo.repository;
 
-import com.example.todo.model.Priority;
+import com.example.todo.enums.Priority;
 import com.example.todo.model.Todo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,7 +54,7 @@ public class TodoRepositoryTest {
     }
 
     @Test
-    void testFindById_TodoNotFound() {
+    void testFindById_todoNotFound() {
         // Arrange & Act
         Optional<Todo> optionalTodo = todoRepository.findById(1L);
 
@@ -109,7 +109,7 @@ public class TodoRepositoryTest {
     }
 
     @Test
-    void testDeleteById_TodoNotFound() {
+    void testDeleteById_todoNotFound() {
         // Arrange
         Todo todo = new Todo("Another todo", Priority.LOW);
         todoRepository.save(todo);

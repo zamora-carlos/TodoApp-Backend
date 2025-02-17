@@ -1,94 +1,38 @@
 package com.example.todo.model;
 
-import javax.persistence.*;
+import com.example.todo.enums.Priority;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
-@Entity
+@Data
+@AllArgsConstructor
+@Builder
 public class Todo {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;  // This should be the unique identifier
-
-    @Column(nullable = false, length = 120)
+    private Long id;
     private String text;
+    private Priority priority;
+
+    @Builder.Default
+    private boolean isDone = false;
 
     private LocalDateTime dueDate;
-
-    @Enumerated(EnumType.STRING)
-    private Priority priority;  // Enum reference to Priority
-
-    private boolean isDone;
-
     private LocalDateTime doneDate;
 
-    private LocalDateTime createdAt;
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Constructors
-    public Todo() {
-        this.createdAt = LocalDateTime.now();
+    public Todo(String text, Priority priority, LocalDateTime dueDate) {
+        this.text = text;
+        this.priority = priority;
         this.isDone = false;
+        this.dueDate = dueDate;
+        this.createdAt = LocalDateTime.now();
     }
 
     public Todo(String text, Priority priority) {
-        this.priority = priority;
-        this.text = text;
-    }
-
-    // Getters and Setters for all fields
-    public Long getId() {
-        return id; // Getter for the id field
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public LocalDateTime getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(LocalDateTime dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public Priority getPriority() {
-        return priority;
-    }
-
-    public void setPriority(Priority priority) {
-        this.priority = priority;
-    }
-
-    public boolean isDone() {
-        return isDone;
-    }
-
-    public void setDone(boolean done) {
-        isDone = done;
-    }
-
-    public LocalDateTime getDoneDate() {
-        return doneDate;
-    }
-
-    public void setDoneDate(LocalDateTime doneDate) {
-        this.doneDate = doneDate;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+        this(text, priority, null);
     }
 }
