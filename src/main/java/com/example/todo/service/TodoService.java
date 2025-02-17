@@ -113,6 +113,15 @@ public class TodoService {
         return filteredTodos.isEmpty() ? 0L : Math.round((double) totalTime / filteredTodos.size());
     }
 
+    private static List<Todo> getFilteredTodos(List<Todo> todos, String text, Priority priority, Boolean isDone) {
+        return todos.stream()
+                .filter(todo ->
+                        (text == null || todo.getText().toLowerCase().contains(text)) &&
+                        (priority == null || todo.getPriority() == priority) &&
+                        (isDone == null || isDone.equals(todo.isDone())))
+                .toList();
+    }
+
     private static int compareDueDates(LocalDateTime date1, LocalDateTime date2) {
         if (date1 == null && date2 == null) return 0;
         if (date1 == null) return 1;
@@ -140,8 +149,8 @@ public class TodoService {
             case DUE_DATE -> Comparator
                     .comparing(Todo::getDueDate,
                             order == SortOrder.ASC
-                                    ? Comparator.nullsLast(LocalDateTime::compareTo).reversed()
-                                    : Comparator.nullsLast(LocalDateTime::compareTo))
+                                    ? Comparator.nullsLast(LocalDateTime::compareTo)
+                                    : Comparator.nullsLast(LocalDateTime::compareTo).reversed())
                     .thenComparing(Todo::getPriority, Comparator.reverseOrder())
                     .thenComparing(Todo::getText);
         };
@@ -150,15 +159,6 @@ public class TodoService {
         sortedTodos.sort(comparator);
 
         return sortedTodos;
-    }
-
-    private static List<Todo> getFilteredTodos(List<Todo> todos, String text, Priority priority, Boolean isDone) {
-        return todos.stream()
-                .filter(todo ->
-                        (text == null || todo.getText().toLowerCase().contains(text)) &&
-                        (priority == null || todo.getPriority() == priority) &&
-                        (isDone == null || isDone.equals(todo.isDone())))
-                .toList();
     }
 
     private static List<TodoResponse> getPaginatedTodos(List<Todo> todos, int page, int size) {

@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -87,7 +88,9 @@ public class TodoControllerTest {
     @Test
     void testUpdateTodo() throws Exception {
         // Arrange
-        UpdateTodoRequest updateTodoRequest = new UpdateTodoRequest("Todo updated", Priority.MEDIUM, LocalDateTime.of(2025, 2, 14, 9, 0));
+        LocalDateTime date = LocalDateTime.now().plusDays(1);
+        UpdateTodoRequest updateTodoRequest = new UpdateTodoRequest("Todo updated", Priority.MEDIUM, date);
+
         TodoResponse todoResponse = TodoResponse.builder()
                 .id(1L)
                 .text(updateTodoRequest.getText())
@@ -102,8 +105,8 @@ public class TodoControllerTest {
         mockMvc.perform(put("/todos/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateTodoRequest)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.dueDate").value("2025-02-14T09:00:00"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.dueDate").value(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"))))
                 .andExpect(jsonPath("$.text").value(updateTodoRequest.getText()))
                 .andExpect(jsonPath("$.id").value(1));
 
