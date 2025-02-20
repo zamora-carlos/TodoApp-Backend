@@ -45,7 +45,7 @@ public class TodoMapper {
             todo.setPriority(updateTodoRequest.getPriority());
         }
 
-        if (updateTodoRequest.getDueDate() != null) {
+        if (updateTodoRequest.updateDueDate()) {
             todo.setDueDate(updateTodoRequest.getDueDate());
         }
     }
