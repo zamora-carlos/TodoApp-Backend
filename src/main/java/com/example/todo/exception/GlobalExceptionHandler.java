@@ -52,6 +52,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiErrorResponse);
     }
 
+    @ExceptionHandler(InvalidUpdateTodoRequestException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidUpdateTodoRequestException(InvalidUpdateTodoRequestException ex) {
+        List<FieldErrorResponse> errorDetails = ex.getErrors();
+
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse(
+                400, "Validation failed for one or more fields.", LocalDateTime.now(), errorDetails
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiErrorResponse);
+    }
+
     // Query string parameter conversion failure
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
