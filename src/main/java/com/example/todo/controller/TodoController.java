@@ -20,7 +20,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/todos")
-@CrossOrigin("*")
 @Tag(name = "Todo", description = "Manage your todos")
 public class TodoController {
 
