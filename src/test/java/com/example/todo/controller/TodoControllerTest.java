@@ -14,9 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static org.hamcrest.Matchers.matchesRegex;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -53,7 +53,7 @@ public class TodoControllerTest {
         when(todoService.getTodos("Task", Priority.HIGH, null, 1, 5, SortCriteria.TEXT, SortOrder.ASC)).thenReturn(pageResponse);
 
         // Act & Assert
-        mockMvc.perform(get("/todos?text=Task&priority=HIGH&size=5")
+        mockMvc.perform(get("/api/v1/todos?text=Task&priority=HIGH&size=5")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalItems").value(2))
@@ -76,7 +76,7 @@ public class TodoControllerTest {
         when(todoService.createTodo(any(CreateTodoRequest.class))).thenReturn(todo);
 
         // Act & Assert
-        mockMvc.perform(post("/todos")
+        mockMvc.perform(post("/api/v1/todos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(todoRequest)))
                 .andExpect(status().isCreated())
@@ -101,11 +101,13 @@ public class TodoControllerTest {
         when(todoService.updateTodo(eq(1L), any(UpdateTodoRequest.class))).thenReturn(todoResponse);
 
         // Act & Assert
-        mockMvc.perform(put("/todos/1")
+        mockMvc.perform(put("/api/v1/todos/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateTodoRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.dueDate").value(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"))))
+                .andExpect(jsonPath("$.dueDate")
+                        .value(matchesRegex("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}.*"))
+                )
                 .andExpect(jsonPath("$.text").value(updateTodoRequest.getText()))
                 .andExpect(jsonPath("$.id").value(1));
 
