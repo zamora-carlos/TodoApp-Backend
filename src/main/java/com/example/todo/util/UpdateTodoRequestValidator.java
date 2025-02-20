@@ -4,6 +4,7 @@ import com.example.todo.dto.FieldErrorResponse;
 import com.example.todo.enums.Priority;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,10 +41,18 @@ public class UpdateTodoRequestValidator {
             Object dueDate = requestBody.get("dueDate");
 
             if (dueDate != null) {
-                if (!(dueDate instanceof LocalDateTime dueDateValue)) {
-                    errors.add(new FieldErrorResponse("dueDate", "Due date must be a valid date.", dueDate));
-                } else if (dueDateValue.isBefore(LocalDateTime.now())) {
-                    errors.add(new FieldErrorResponse("dueDate", "Due date must be either today or in the future.", dueDateValue));
+                if (!(dueDate instanceof String dueDateString)) {
+                    errors.add(new FieldErrorResponse("dueDate", "Invalid date format. Due date must be a valid LocalDateTime.", dueDate));
+                } else {
+                    try {
+                        LocalDateTime dueDateValue = LocalDateTime.parse(dueDateString);
+
+                        if (dueDateValue.isBefore(LocalDateTime.now())) {
+                            errors.add(new FieldErrorResponse("dueDate", "Due date must be either today or in the future.", dueDateValue));
+                        }
+                    } catch (DateTimeParseException e) {
+                        errors.add(new FieldErrorResponse("dueDate", "Invalid date format. Due date must be a valid LocalDateTime.", dueDate));
+                    }
                 }
             }
         }
