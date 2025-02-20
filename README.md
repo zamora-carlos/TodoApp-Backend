@@ -1,7 +1,7 @@
 # TodoApp API
 
 This project is a Todo REST API built with Java and Spring Boot.
-It provides common endpoints to manage todos and other features such as pagination with filtering, sorting, and marking tasks as done/undone.
+It provides common endpoints to manage to-dos and other features such as pagination with filtering, sorting, and marking tasks as done/undone.
 
 ---
 
@@ -42,13 +42,16 @@ Make sure you have Maven installed and Java JDK 21
 
 - **Start the application**:
 
-The following command will start the application at http://localhost:9090.
+  &nbsp;
+
+  The following command will start the application at http://localhost:9090.
 
   ```bash
   mvn spring-boot:run
   ```
 
 - **Test the application**:
+
   ```bash
   mvn test
   ```
@@ -60,18 +63,18 @@ The following command will start the application at http://localhost:9090.
 Once the application is running, you can view the full documentation, along with the request and response schemas, in the Swagger UI at http://localhost:9090/swagger-ui/index.html.
 From there, you can also interact with the API and try out the endpoints directly.
 
-### GET /todos
+### GET /api/v1/todos
 
-Fetches an array of todos, with optional filters and pagination.
+Fetches an array of to-dos, with optional filters and pagination.
 
 #### Query parameters
 
-- `text` (optional): Filter Todos by text.
-- `priority` (optional): Filter Todos by priority. Values can be: `LOW`, `MEDIUM`, `HIGH`.
-- `done` (optional): Filter Todos by completion status (boolean).
+- `text` (optional): Filter to-dos by text.
+- `priority` (optional): Filter to-dos by priority. Values can be: `LOW`, `MEDIUM`, `HIGH`.
+- `done` (optional): Filter to-dos by completion status (boolean).
 - `page` (default: `1`): Page number for pagination.
-- `size` (default: `10`): Number of Todos per page.
-- `sort_by` (default: `TEXT`): Sort Todos by a specific field. Values can be: `TEXT`, `PRIORITY`, `DUE_DATE`.
+- `size` (default: `10`): Number of to-dos per page.
+- `sort_by` (default: `TEXT`): Sort to-dos by a specific field. Values can be: `TEXT`, `PRIORITY`, `DUE_DATE`.
 - `order` (default: `ASC`): Sort order. Values can be: `ASC`, `DESC`.
 
 #### Response
@@ -103,9 +106,9 @@ Status code `200` (OK).
 }
 ```
 
-### GET /todos/{id}
+### GET /api/v1/todos/{id}
 
-Fetches a specific todo by ID.
+Fetches a specific to-do by ID.
 
 #### Response
 
@@ -121,9 +124,9 @@ Status code `200` (OK).
 }
 ```
 
-### GET /todos/metrics
+### GET /api/v1/todos/metrics
 
-Fetches metrics on the average completion times of todos measured in seconds.
+Fetches metrics for the average completion times of to-dos, measured in seconds.
 
 #### Response
 
@@ -138,9 +141,9 @@ Status code `200` (OK).
 }
 ```
 
-### POST /todos
+### POST /api/v1/todos
 
-Creates a new todo item.
+Creates a new to-do item.
 The `text` and `priority` fields are required, while the `dueDate` field can be `null`.
 
 #### Request body
@@ -167,10 +170,11 @@ Status code `201` (Created).
 }
 ```
 
-### PUT /todos/{id}
+### PUT /api/v1/todos/{id}
 
-Updates an existing todo by ID.
+Updates an existing to-do by ID.
 All fields are optional. If a field is not provided, it will retain its current value.
+If the `dueDate` is set to null, the to-do's due date will be removed.
 
 #### Request body
 
@@ -196,28 +200,28 @@ Status code `200` (OK).
 }
 ```
 
-### PUT /todos/{id}/done
+### PUT /api/v1/todos/{id}/done
 
-Marks a todo as completed.
-
-#### Response
-
-Status code `204` (No Content) with no body.
-
-### PUT /todos/{id}/undone
-
-Marks a todo as not completed.
-
-#### Response
-Status code `204` (No Content) with no body.
-
-### DELETE /todos/{id}
-
-Deletes a todo by ID.
+Marks a to-do as completed.
 
 #### Response
 
-Status code `204` (No Content) with no body.
+Status code `204` (No Content) with no response body.
+
+### PUT /api/v1/todos/{id}/undone
+
+Marks a to-do as not completed.
+
+#### Response
+Status code `204` (No Content) with no response body.
+
+### DELETE /api/v1/todos/{id}
+
+Deletes a to-do by ID.
+
+#### Response
+
+Status code `204` (No Content) with no response body.
 
 ---
 
@@ -278,7 +282,7 @@ If the request body is invalid or missing required fields.
 
 ### 404 Not Found
 
-If a Todo with the specified ID is not found.
+If a to-do with the specified ID is not found.
 
 ```json
 {
@@ -305,4 +309,4 @@ For server-side issues and other unhandled exceptions.
 ## Data Storage
 
 Data is stored in-memory using a Java List.
-This means any todos saved while the application is running will be lost once the application is shut down.
+This means any to-dos saved while the application is running will be lost once the application is shut down.

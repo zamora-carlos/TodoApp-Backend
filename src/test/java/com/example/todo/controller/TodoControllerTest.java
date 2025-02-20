@@ -53,7 +53,7 @@ public class TodoControllerTest {
         when(todoService.getTodos("Task", Priority.HIGH, null, 1, 5, SortCriteria.TEXT, SortOrder.ASC)).thenReturn(pageResponse);
 
         // Act & Assert
-        mockMvc.perform(get("/todos?text=Task&priority=HIGH&size=5")
+        mockMvc.perform(get("/api/v1/todos?text=Task&priority=HIGH&size=5")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalItems").value(2))
@@ -76,7 +76,7 @@ public class TodoControllerTest {
         when(todoService.createTodo(any(CreateTodoRequest.class))).thenReturn(todo);
 
         // Act & Assert
-        mockMvc.perform(post("/todos")
+        mockMvc.perform(post("/api/v1/todos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(todoRequest)))
                 .andExpect(status().isCreated())
@@ -101,7 +101,7 @@ public class TodoControllerTest {
         when(todoService.updateTodo(eq(1L), any(UpdateTodoRequest.class))).thenReturn(todoResponse);
 
         // Act & Assert
-        mockMvc.perform(put("/todos/1")
+        mockMvc.perform(put("/api/v1/todos/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateTodoRequest)))
                 .andExpect(status().isOk())
