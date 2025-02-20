@@ -42,8 +42,6 @@ Make sure you have Maven installed and Java JDK 21
 
 - **Start the application**:
 
-  &nbsp;
-
   The following command will start the application at http://localhost:9090.
 
   ```bash
@@ -63,7 +61,7 @@ Make sure you have Maven installed and Java JDK 21
 Once the application is running, you can view the full documentation, along with the request and response schemas, in the Swagger UI at http://localhost:9090/swagger-ui/index.html.
 From there, you can also interact with the API and try out the endpoints directly.
 
-### GET /api/v1/todos
+### GET `/api/v1/todos`
 
 Fetches an array of to-dos, with optional filters and pagination.
 
@@ -106,7 +104,7 @@ Status code `200` (OK).
 }
 ```
 
-### GET /api/v1/todos/{id}
+### GET `/api/v1/todos/{id}`
 
 Fetches a specific to-do by ID.
 
@@ -124,7 +122,7 @@ Status code `200` (OK).
 }
 ```
 
-### GET /api/v1/todos/metrics
+### GET `/api/v1/todos/metrics`
 
 Fetches metrics for the average completion times of to-dos, measured in seconds.
 
@@ -141,7 +139,7 @@ Status code `200` (OK).
 }
 ```
 
-### POST /api/v1/todos
+### POST `/api/v1/todos`
 
 Creates a new to-do item.
 The `text` and `priority` fields are required, while the `dueDate` field can be `null`.
@@ -170,7 +168,7 @@ Status code `201` (Created).
 }
 ```
 
-### PUT /api/v1/todos/{id}
+### PUT `/api/v1/todos/{id}`
 
 Updates an existing to-do by ID.
 All fields are optional. If a field is not provided, it will retain its current value.
@@ -200,7 +198,7 @@ Status code `200` (OK).
 }
 ```
 
-### PUT /api/v1/todos/{id}/done
+### PUT `/api/v1/todos/{id}/done`
 
 Marks a to-do as completed.
 
@@ -208,14 +206,14 @@ Marks a to-do as completed.
 
 Status code `204` (No Content) with no response body.
 
-### PUT /api/v1/todos/{id}/undone
+### PUT `/api/v1/todos/{id}/undone`
 
 Marks a to-do as not completed.
 
 #### Response
 Status code `204` (No Content) with no response body.
 
-### DELETE /api/v1/todos/{id}
+### DELETE `/api/v1/todos/{id}`
 
 Deletes a to-do by ID.
 
