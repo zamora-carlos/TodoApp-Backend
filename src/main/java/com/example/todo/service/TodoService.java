@@ -33,14 +33,14 @@ public class TodoService {
             SortOrder order) {
 
         List<Todo> filteredTodos = getFilteredTodos(
-                todoRepository.findAll(), text != null ? text.toLowerCase() : null, priority, isDone);
+                todoRepository.findAll(), text != null ? text.trim().toLowerCase() : null, priority, isDone);
 
         List<Todo> sortedTodos = getSortedTodos(filteredTodos, sortBy, order);
 
-        List<TodoResponse> content = getPaginatedTodos(sortedTodos, page, size);
-
         long totalItems = filteredTodos.size();
         int totalPages = (int) Math.ceil((double) totalItems / size);
+
+        List<TodoResponse> content = getPaginatedTodos(sortedTodos, Math.min(Math.max(1, totalPages), page), size);
 
         return PaginatedResponse.<TodoResponse>builder()
                 .content(content)
@@ -135,7 +135,7 @@ public class TodoService {
     private static List<Todo> getSortedTodos(List<Todo> todos, SortCriteria sortBy, SortOrder order) {
         Comparator<Todo> comparator = switch (sortBy) {
             case TEXT -> Comparator
-                    .comparing(Todo::getText,
+                    .comparing((Todo todo) -> todo.getText().toLowerCase(),
                             order == SortOrder.ASC
                                     ? Comparator.naturalOrder()
                                     : Comparator.reverseOrder())
@@ -147,14 +147,14 @@ public class TodoService {
                                     ? Comparator.naturalOrder()
                                     : Comparator.reverseOrder())
                     .thenComparing((todo1, todo2) -> compareDueDates(todo1.getDueDate(), todo2.getDueDate()))
-                    .thenComparing(Todo::getText);
+                    .thenComparing((Todo todo) -> todo.getText().toLowerCase());
             case DUE_DATE -> Comparator
                     .comparing(Todo::getDueDate,
                             order == SortOrder.ASC
                                     ? Comparator.nullsLast(LocalDateTime::compareTo)
                                     : Comparator.nullsLast(LocalDateTime::compareTo).reversed())
                     .thenComparing(Todo::getPriority, Comparator.reverseOrder())
-                    .thenComparing(Todo::getText);
+                    .thenComparing((Todo todo) -> todo.getText().toLowerCase());
         };
 
         List<Todo> sortedTodos = new ArrayList<>(todos);
