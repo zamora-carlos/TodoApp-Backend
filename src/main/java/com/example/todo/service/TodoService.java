@@ -37,10 +37,10 @@ public class TodoService {
 
         List<Todo> sortedTodos = getSortedTodos(filteredTodos, sortBy, order);
 
-        List<TodoResponse> content = getPaginatedTodos(sortedTodos, page, size);
-
         long totalItems = filteredTodos.size();
         int totalPages = (int) Math.ceil((double) totalItems / size);
+
+        List<TodoResponse> content = getPaginatedTodos(sortedTodos, Math.min(Math.max(1, totalPages), page), size);
 
         return PaginatedResponse.<TodoResponse>builder()
                 .content(content)

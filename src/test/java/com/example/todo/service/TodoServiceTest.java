@@ -87,7 +87,8 @@ public class TodoServiceTest {
                 "8, 4, 2, 8",
                 "9, 1, 1, 30",
                 "3, 9, 9, 4",
-                "10, 5, 0, 6",
+                "10, 5, 5, 6",
+                "20, 11, 8, 3",
                 "3, 12, 6, 3",
                 "1, 50, 30, 1"
         })
@@ -112,7 +113,7 @@ public class TodoServiceTest {
         @CsvSource({
                 "TEAM, 3",
                 "x, 4",
-                " , 30",
+                ", 30",
                 ", 30",
                 "a long text that is not in any todo, 0",
                 "A, 19",
