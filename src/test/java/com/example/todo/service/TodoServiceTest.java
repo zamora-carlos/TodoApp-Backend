@@ -101,7 +101,7 @@ public class TodoServiceTest {
                     null, null, null, page, pageSize, SortCriteria.TEXT, SortOrder.ASC);
 
             // Assert
-            assertEquals(page, pageResponse.getCurrentPage());
+            assertEquals(Math.min(Math.max(1, totalPages), page), pageResponse.getCurrentPage());
             assertEquals(pageSize, pageResponse.getPageSize());
             assertEquals(totalPages, pageResponse.getTotalPages());
             assertEquals(todosOnPage, pageResponse.getContent().size());
