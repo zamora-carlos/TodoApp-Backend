@@ -15,11 +15,39 @@ It provides common endpoints to manage to-dos and other features such as paginat
 
 ## Getting started
 
-### Prerequisites
+### Running with Docker
+
+Make sure you have Docker installed.
+
+- **Clone the repository**:
+  
+  ```bash
+  git clone https://github.com/zamora-carlos/TodoApp-Backend.git
+  ```
+
+- **Navigate to the project folder**:
+
+  ```bash
+  cd TodoApp-Backend
+  ```
+
+- **Build the Docker image**:
+  
+  ```bash
+  docker build -t todoapp-backend .
+  ```
+
+- **Run the Docker container**:
+  
+  ```bash
+  docker run -p 9090:9090 todoapp-backend
+  ```
+
+The API will be accessible at http://localhost:9090.
+
+### Manual installation
 
 Make sure you have Maven installed and Java JDK 21
-
-### Setup
 
 - **Clone the repository**:
   ```bash
@@ -36,9 +64,7 @@ Make sure you have Maven installed and Java JDK 21
   mvn clean install
   ```
 
-### Running the project
-
-#### Commands
+#### Run commands
 
 - **Start the application**:
 
@@ -306,5 +332,5 @@ For server-side issues and other unhandled exceptions.
 
 ## Data Storage
 
-Data is stored in-memory using a Java List.
+Data is stored in-memory using a Java Map.
 This means any to-dos saved while the application is running will be lost once the application is shut down.
