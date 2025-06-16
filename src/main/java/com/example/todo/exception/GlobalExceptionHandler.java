@@ -52,8 +52,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiErrorResponse);
     }
 
-    @ExceptionHandler(InvalidUpdateTodoRequestException.class)
-    public ResponseEntity<ApiErrorResponse> handleInvalidUpdateTodoRequestException(InvalidUpdateTodoRequestException ex) {
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidRequestException(InvalidRequestException ex) {
         List<FieldErrorResponse> errorDetails = ex.getErrors();
 
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse(

@@ -6,8 +6,8 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class InvalidUpdateTodoRequestException extends InvalidRequestException {
-    public InvalidUpdateTodoRequestException(List<FieldErrorResponse> errors) {
+public class InvalidCreateTodoRequestException extends InvalidRequestException {
+    public InvalidCreateTodoRequestException(List<FieldErrorResponse> errors) {
         super(errors);
     }
 }

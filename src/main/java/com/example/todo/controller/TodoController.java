@@ -2,19 +2,23 @@ package com.example.todo.controller;
 
 import com.example.todo.dto.*;
 import com.example.todo.enums.*;
+import com.example.todo.exception.InvalidCreateTodoRequestException;
 import com.example.todo.exception.InvalidUpdateTodoRequestException;
 import com.example.todo.mapper.TodoMapper;
 import com.example.todo.service.TodoService;
+import com.example.todo.util.DueDateValidator;
 import com.example.todo.util.UpdateTodoRequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +59,22 @@ public class TodoController {
 
     @Operation(summary = "Create a new todo", description = "Create a new todo item with the provided details.")
     @PostMapping
-    public ResponseEntity<TodoResponse> createTodo(@Validated @RequestBody CreateTodoRequest todo) {
+    public ResponseEntity<TodoResponse> createTodo(@Valid @RequestBody CreateTodoRequest todo, BindingResult bindingResult) {
+
+        List<FieldErrorResponse> errors = new ArrayList<>();
+
+        if (bindingResult.hasErrors()) {
+            bindingResult.getFieldErrors().forEach(error ->
+                    errors.add(new FieldErrorResponse(error.getField(), error.getDefaultMessage(), error.getRejectedValue()))
+            );
+        }
+
+        errors.addAll(DueDateValidator.validateDueDate(todo.getDueDate()));
+
+        if (!errors.isEmpty()) {
+            throw new InvalidCreateTodoRequestException(errors);
+        }
+
         TodoResponse createdTodo = todoService.createTodo(todo);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTodo);
     }
