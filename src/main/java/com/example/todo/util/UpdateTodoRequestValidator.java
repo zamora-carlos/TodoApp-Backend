@@ -3,6 +3,7 @@ package com.example.todo.util;
 import com.example.todo.dto.FieldErrorResponse;
 import com.example.todo.enums.Priority;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -46,8 +47,10 @@ public class UpdateTodoRequestValidator {
                 } else {
                     try {
                         LocalDateTime dueDateValue = LocalDateTime.parse(dueDateString);
+                        LocalDate dueDateAsLocalDate = dueDateValue.toLocalDate();
+                        LocalDate today = LocalDate.now();
 
-                        if (dueDateValue.isBefore(LocalDateTime.now())) {
+                        if (dueDateAsLocalDate.isBefore(today)) {
                             errors.add(new FieldErrorResponse("dueDate", "Due date must be either today or in the future.", dueDateValue));
                         }
                     } catch (DateTimeParseException e) {
