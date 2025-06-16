@@ -1,7 +1,6 @@
 package com.example.todo.dto;
 
 import com.example.todo.enums.Priority;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -23,6 +22,5 @@ public class CreateTodoRequest implements Serializable {
     @NotNull(message = "Priority is required.")
     private Priority priority;
 
-    @FutureOrPresent(message = "Due date must be either today or in the future.")
     private LocalDateTime dueDate;
 }
